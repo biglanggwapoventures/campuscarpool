@@ -1,8 +1,8 @@
 <template>
 <div class="form-group" v-bind:class="{ 'has-danger': errors.length > 0 }">
-    <label class="mb-0 form-control-label" v-if="label">{{ label }}</label>
-    <input ref="input" v-bind:type="inputType" v-bind:value="value" v-on:input="updateValue($event.target.value)" class="form-control form-control-sm">
-    <div class="form-control-feedback" v-if="errors.length > 0">{{ errors[0] }}</div>
+    <label class="form-control-label" v-show="label" v-bind:class="labelClassName ? labelClassName : ''">{{ label }}</label>
+    <input ref="input" v-bind:type="inputType" :id="id" v-bind:value="value" v-on:input="updateValue($event.target.value)" class="form-control" v-bind:class="inputClassName ? inputClassName : ''">
+    <div class="form-control-feedback" v-show="errors.length > 0">{{ errors[0] }}</div>
 </div>
 </template>
 
@@ -23,7 +23,18 @@
             },
             errors: {
                 default: ''
-            }
+            },
+            id: {
+                default: ''
+            },
+            inputClassName: {
+                type: String,
+                default: ''
+            },
+            labelClassName: {
+                type: String,
+                default: ''
+            },
         },
         
         methods: {

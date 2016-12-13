@@ -20,13 +20,10 @@
 </head>
 <body>
     <div id="app">
-       <router-view></router-view>
+        <router-view></router-view>
     </div>
-    
-
     <!-- Scripts -->
      <script src="{{ elixir('js/app.js') }}"></script>
-   
    
 </body>
 </html>

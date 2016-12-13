@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('enrolled_program')->nullable();
+            $table->string('school_id_filename');
             $table->string('id_number')->unique();
             $table->string('email')->unique();
             $table->string('password');

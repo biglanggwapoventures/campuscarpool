@@ -6,6 +6,7 @@ use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -74,4 +75,34 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+    
+    public function register(Request $request)
+    {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'role' => 'required|in:DRIVER,COMMUTER',
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'id_number' => 'required|max:255|unique:users,id_number',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        if($v->fails()){
+            return response()->json($v->errors(), 403);
+        }
+
+        User::create([
+            'role' => $data['role'],
+            'firstname' => $data['firstname'],
+            'lastname' => $data['lastname'],
+            'email' => $data['email'],
+            'id_number' => $data['id_number'],
+            'password' => bcrypt($data['password']),
+        ]);
+
+
+    }
+
 }

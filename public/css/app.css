@@ -25,6 +25,28 @@
   border-style: dashed;
 }
 
+.main-content .card.driver-routes div.route-details {
+  border-left: 2px solid #dddddd;
+  padding-left: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.main-content .card.driver-routes div.route-actions .report {
+  visibility: hidden;
+}
+
+.main-content .card.driver-routes div.route-actions a {
+  font-weight: bold;
+}
+
+.main-content .card.driver-routes div.route-actions a:hover {
+  text-decoration: none;
+}
+
+.main-content .card.driver-routes div.route-actions a:not(:last-child) {
+  margin-right: 1rem;
+}
+
 .content {
   height: 100%;
   background: url(./../images/bg.jpg) center center no-repeat;
@@ -37,6 +59,18 @@
 
 .content .card img.card-img-top {
   padding: 10px;
+}
+
+.breadcrumb.registration .breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+}
+
+.breadcrumb.registration .breadcrumb-item {
+  cursor: default;
+}
+
+.breadcrumb.registration .breadcrumb-item:hover {
+  text-decoration: none;
 }
 
 .form-control-feedback, .form-text {

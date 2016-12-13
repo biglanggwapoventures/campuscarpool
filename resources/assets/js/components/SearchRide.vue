@@ -1,5 +1,5 @@
 <template>
-<div class="card card-block card-outline-success">
+<div class="card card-block">
     <form>
         <div class="row">
             <div class="col-sm-12 ">
@@ -15,20 +15,23 @@
                 </label>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-10">
-                <div class="form-group"  v-if="commuteType === 'campus'">
-                    <input type="text" class="form-control" placeholder="Enter pick-up point">
-                    <a class="form-text text-xs-right" href="#">Use most recent pick-up point <i class="fa fa-mouse-pointer fa-fw"></i> </a>
-                </div>
-                <div class="form-group"  v-if="commuteType === 'home'">
-                    <input type="text" class="form-control" placeholder="Enter drop-off point">
-                     <a class="form-text text-xs-right" href="#">Use most recent drop-off point  <i class="fa fa-mouse-pointer fa-fw"></i> </a>
-                </div>
+        <div class="form-group"  v-if="commuteType === 'campus'">
+                <div class="input-group">
+                <input type="text" class="form-control" placeholder="Enter pick-up point">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
+                </span>
             </div>
-            <div class="col-sm-2">
-                <a href="#" class="btn btn-success btn-block">Find</a>
+            <a class="form-text text-xs-right" href="#">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent pick-up point </a>
+        </div>
+        <div class="form-group"  v-if="commuteType === 'home'">
+                <div class="input-group">
+                <input type="text" class="form-control" placeholder="Enter drop-off point">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
+                </span>
             </div>
+                <a class="form-text text-xs-right" href="#">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent drop-off point</a>
         </div>
     </form>
 </div>

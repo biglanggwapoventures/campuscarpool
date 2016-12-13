@@ -1,0 +1,244 @@
+<template>
+
+    <div>
+        <div class="alert alert-info" role="alert" hidden>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <p class="mb-0">You currently do not have any active routes.</p>
+        </div>
+        <div class="card ">
+            <div class="card-block p-0">
+                 <div id="map"></div>
+            </div>
+            <div class="card-block">
+                <form>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="custom-control custom-radio">
+                                    <input v-model="routeData.type" value="CAMPUS" type="radio" class="custom-control-input">
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="custom-control-description">I am heading to campus</span>
+                                </label>
+                                <label class="custom-control custom-radio">
+                                    <input v-model="routeData.type" value="HOME"  type="radio" class="custom-control-input">
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="custom-control-description">I am heading home</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <form-input v-model="place" :label="routeData.type === 'CAMPUS' ? 'Your origin address' : 'Your home address'" id="place" inputClassName="form-control-sm" labelClassName="mb-0"></form-input>
+                     <div class="form-group">
+                         <label>Departure date and time</label>
+                         <div class="row">
+                            <div class="col-sm-6">
+                                <datepicker format="MM/dd/yyyy" :value="routeData.departure.date"></datepicker>
+                            </div>
+                            <div class="col-sm-6">
+                                <timepicker format="hh:mm A" hide-clear-button v-model="routeData.departure.time"></timepicker>
+                            </div>
+                        </div>
+                     </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <form-input v-model="fare" label="Fare contribution" inputClassName="form-control-sm"  labelClassName="mb-0"></form-input>
+                        </div>
+                        <div class="col-sm-6">
+                            <form-input v-model="max_passenger" label="Max passenger" inputClassName="form-control-sm"  labelClassName="mb-0"></form-input>
+                        </div>
+                    </div>
+                    <form-input v-model="additional_route_details" label="Additional route details" inputClassName="form-control-sm"  labelClassName="mb-0"></form-input>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    
+                </form>
+            </div>
+            
+        </div>
+    </div>
+   
+    
+</template>
+
+<script>
+    export default {
+        mounted (){
+            var GoogleMapsLoader = require('google-maps');
+
+            GoogleMapsLoader.KEY = 'AIzaSyCueneuLIZWACMGBDBQaYix4vE9X1UkP_0';
+            GoogleMapsLoader.REGION = 'PH';  
+            GoogleMapsLoader.LIBRARIES = ['places'];    
+            
+            GoogleMapsLoader.load((google)  => {
+                this.google = google;
+                this.initMap();
+            });
+        },
+       data (){
+           return {
+                origin : null,
+                destination : null,
+                google : null,
+                map : null,
+                directionsService : null,
+                directionsDisplay : null,
+                distanceMatrixService : null,
+                placesService : null,
+                placeInput : null,
+                placeAutocomplete : null,
+                constants : {
+                    CAMPUS_LATLNG: null
+                },
+                routeData: {
+                    type: 'CAMPUS',
+                    place: {
+                        id: null,
+                        lat: null,
+                        lng: null,
+                        formatted_address: null,
+                    },
+                    departure: {
+                        date: null,
+                        time: {
+                            hh: null,
+                            mm: null,
+                            A: null
+                        }
+                    },
+                    fare_contribution: null,
+                    max_passenger: null,
+                    additional_details: null
+                },
+           }
+       },
+       watch: {
+            routeType (){
+                this.drawRoute();
+            }
+        },
+       methods: {
+           initMap(){
+                this.constants.CAMPUS_LATLNG = new this.google.maps.LatLng(10.351887545991266, 123.9138400554657);
+                this.map = new this.google.maps.Map(document.getElementById('map'), {
+                    center: this.constants.CAMPUS_LATLNG,
+                    zoom: 18,
+                    mapTypeId: 'satellite'
+                });
+
+                // this.map.addListener('click', function(event){
+                //     console.log(event.latLng.lat() + ' ' + event.latLng.lng())
+                // });
+
+                this.directionsService = new this.google.maps.DirectionsService;
+                this.directionsDisplay = new this.google.maps.DirectionsRenderer;
+                this.placesService = new this.google.maps.places.PlacesService(this.map);
+                this.distanceMatrixService = new this.google.maps.DistanceMatrixService();
+
+                this.directionsDisplay.setMap(this.map);
+
+                // this.setCampusAsCenter();
+                this.initPlaceAutocomplete();
+           },
+           initPlaceAutocomplete(){
+                this.placeInput = document.getElementById('place');
+                this.placeAutocomplete = new this.google.maps.places.Autocomplete(this.placeInput);
+                this.placeAutocomplete.addListener('place_changed', () => {
+                    var place = this.placeAutocomplete.getPlace();
+                    if (!place.geometry) {
+                        window.alert("Autocomplete's returned place contains no geometry");
+                        return;
+                    }
+                    this.expandViewportToFitPlace(place);
+ 
+                    // this.drawRoute(new this.google.maps.LatLng(place.geometry.location));
+                    this.drawRoute(place.place_id);
+
+                    console.log(place)
+                });
+           },
+           setCampusAsCenter(){
+               this.placesService.getDetails({
+                    placeId: this.constants.CAMPUS_PLACE_ID
+                }, (place, status) => {
+                    if (status === this.google.maps.places.PlacesServiceStatus.OK) {
+                        this.map.setCenter(place.geometry.location)
+                        this.expandViewportToFitPlace(place);
+                    }
+                });
+           },
+           expandViewportToFitPlace(place){
+                if (place.geometry.viewport) {
+                    this.map.fitBounds(place.geometry.viewport);
+                } else {
+                    this.map.setCenter(place.geometry.location);
+                    this.map.setZoom(18);
+                }
+           },
+           drawRoute(placeId) {
+                if (!placeId) return;
+
+                this.origin = this.routeData.type === 'CAMPUS' ? {placeId: placeId} : this.constants.CAMPUS_LATLNG,
+                this.destination = this.routeData.type === 'CAMPUS' ? this.constants.CAMPUS_LATLNG : {placeId: placeId};
+               
+                this.directionsService.route({
+                    origin: this.origin,
+                    destination: this.destination,
+                    travelMode: 'DRIVING'
+                }, (response, status) => {
+                    if (status === 'OK') {
+                        console.log(response);
+                        this.directionsDisplay.setDirections(response);
+                        this.getRouteDetails();
+                    } else {
+                        console.log('error on route');
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
+            },
+            getRouteDetails(){
+                this.distanceMatrixService.getDistanceMatrix({
+                    origins: [this.origin],
+                    destinations: [this.destination],
+                    travelMode: 'DRIVING',
+                    drivingOptions: {
+                        departureTime: new Date(),  // change to actual date and time of arrival
+                    }
+                }, (response, status) => {
+                    console.log(response)
+                })
+            }
+       },
+       components: {
+            'timepicker': require('vue2-timepicker'),
+            'datepicker' : require('vuejs-datepicker')
+        }
+    }
+</script>
+
+<style>
+    #map{
+        height: 20rem;
+    }
+
+    .time-picker{
+         width:100%!important;
+         display: block!important;;
+    }
+    input.display-time{
+        padding: 0.25rem 0.5rem!important;
+        font-size: 0.875rem!important;
+        line-height: 1.25!important;
+        height:inherit!important;
+        width:100%!important;
+    }
+
+    .datepicker input{
+        border: 1px solid #d2d2d2;
+         width:100%!important;
+        line-height: 1.25!important;;
+        padding: 0.25rem 0.5rem!important;
+        font-size: 0.875rem!important;
+        height:inherit!important;
+    }
+</style>
