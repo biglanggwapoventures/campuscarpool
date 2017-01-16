@@ -1,5 +1,5 @@
 
-window._ = require('lodash');
+// window._ = require('lodash');
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -29,11 +29,9 @@ Vue.use(VueRouter);
  * included with Laravel will automatically verify the header's value.
  */
 
-Vue.http.interceptors.push((request, next) => {
-    request.headers.set('X-CSRF-TOKEN', Laravel.csrfToken);
-
-    next();
-});
+    // Vue.http.interceptors.push((request, next) => {
+    //     next();
+    // });
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

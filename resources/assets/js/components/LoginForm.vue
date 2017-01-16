@@ -55,7 +55,7 @@
                 this.authError = false;
                 this.$auth.login({
                     body: this.auth,
-                    redirect: {name: 'home'},
+                    redirect: {name: 'dashboard'},
                     error(res) {
                         this.authError = res.body.message;
                         this.loading = false;

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTripsTable extends Migration
+class CreateDriverRoutesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,19 @@ class CreateTripsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trips', function (Blueprint $table) {
+        Schema::create('driver_routes', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('created_by');
-            $table->enum('trip_type', ['CAMPUS', 'HOME', 'OTHERS']);
-            $table->timestamp('departure_timestamp');
+            $table->enum('type', ['CAMPUS', 'HOME']);
+            $table->integer('route_index')->default(0);
+            $table->timestamp('departure_datetime');
             $table->string('place_id');
-            $table->string('place_address');
+            $table->string('place_formatted_address');
             $table->decimal('place_latitude', 9, 6);
             $table->decimal('place_longitude', 9, 6);
             $table->unsignedInteger('max_passenger');
             $table->decimal('fare_contribution', 13, 2);
-            $table->string('additional_details');
+            $table->string('additional_details')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -37,6 +38,6 @@ class CreateTripsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trips');
+        Schema::dropIfExists('driver_routes');
     }
 }

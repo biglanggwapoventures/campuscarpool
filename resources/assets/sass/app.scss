@@ -1,6 +1,6 @@
 
 // Fonts
-// @import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
 
 // Variables
 @import "variables";
@@ -8,3 +8,57 @@
 // Bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/font-awesome/scss/font-awesome";
+@import url(./flatpickr.css);
+
+html,body{
+    font-family:  'Source Sans Pro', sans-serif;
+}
+
+#route-page.container-fluid{
+    padding: 0;
+    #map{
+        height: 100vh;
+    }
+    .time-picker{
+         width:100%!important;
+         display: block!important;;
+    }
+    input.display-time{
+        padding: 0.25rem 0.5rem!important;
+        font-size: 0.875rem!important;
+        line-height: 1.25!important;
+        height:inherit!important;
+        width:100%!important;
+    }
+
+    .datepicker input{
+        border: 1px solid #d2d2d2;
+         width:100%!important;
+        line-height: 1.25!important;;
+        padding: 0.25rem 0.5rem!important;
+        font-size: 0.875rem!important;
+        height:inherit!important;
+    }
+
+    .detail-section{
+        height:100vh;
+        overflow:auto;
+        .card-block{
+            padding-top:0.625rem
+        }
+    }
+}
+
+#back-to-dashboard {
+    a{
+        padding:0.625rem 0.5rem 0.625rem 0.5rem;
+        border-bottom:1px solid #ddd;
+        cursor: pointer;
+        display: block;
+        text-align: center;
+        &:hover{
+            text-decoration: none;
+        }
+    }
+   
+}

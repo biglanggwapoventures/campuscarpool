@@ -34,62 +34,61 @@
             </div>
         </div>
          <hr>
-         <a href="" class="btn btn-success btn-sm"><i class="fa fa-thumbs-o-up"></i> Request</a>
-         <a href="" class="btn btn-secondary btn-sm"><i class="fa fa-mail-forward"></i> Message</a>
-         <!--<div class="row">
-             <div class="col-sm-6">
-                 <a href="" class="btn btn-success btn-sm btn-block"><i class="fa fa-thumbs-o-up"></i> Request</a>
-             </div>
-             <div class="col-sm-6">
-                 <a href="" class="btn btn-secondary btn-sm btn-block"><i class="fa fa-mail-forward"></i> Message</a>
-             </div>
-         </div>-->
-         <!--<div class="route-actions">
-            <a href=""><i class="fa fa-thumbs-o-up"></i> Request</a>
-            <a href=""><i class="fa fa-mail-forward"></i> Message</a>
-            <a href="" class="float-xs-right text-danger report"><i class="fa fa-warning"></i> Report</a>
-        </div>-->
+        <router-link :to="{ name: 'view-route', params: { id: routeId }}" class="btn btn-success btn-sm"><i class="fa fa-map-signs"></i> View Route</router-link>
+        <!--<a href="javascript:void(0)" class="btn btn-success btn-sm" @click="request()"><i class="fa fa-thumbs-o-up"></i> Request</a>
+         <a href="" class="btn btn-secondary btn-sm"><i class="fa fa-mail-forward"></i> Message</a>-->
+
     </div>
+    
 </template>
 
 <script>
     export default {
         props: {
-            profilePhotoUrl: {
+            'route-id': {
+                type: Number
+            },
+            'profile-photo-url': {
                 type: String,
                 default: './../images/user7-128x128.jpg'
             },
-            driverName: {
+            'driver-name': {
                 type: String,
                 default: 'John Doe',
             },
-            routeFrom: {
+            'route-from': {
                 type: String,
                 default: 'Campus',
             },
-            routeTo: {
+            'route-to': {
                 type: String,
                 default: 'SM City Cebu',
             },
-            timePosted: {
+            'time-posted': {
                 type: String,
                 default: '1 hour ago',
             },
-            vehicle: {
+            'vehicle': {
                 type: String,
                 default: 'Kia Picanto ABC-123',
             },
-            spaceOccupied: {
+            'space-occupied': {
                 type: Number,
                 default: 1
             },
-            spaceMax: {
+            'space-max': {
                 type: Number,
                 default: 1
             },
-            departureTime: {
+            'departure-time': {
                 type: String,
                 default: 'Dec 2, 2016 @ 4:30PM',
+            }
+        },
+        methods: {
+            viewRoute(){
+                console.log('lol');
+                this.$emit('view-route')
             }
         }
     }

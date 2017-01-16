@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Dingo\Api\Routing\Helpers;
 
 class LoginController extends Controller
 {
-    use Helpers;
 
     public function __invoke(Request $request)
     {

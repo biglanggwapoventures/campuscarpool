@@ -64,7 +64,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------
@@ -179,8 +179,9 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Dingo\Api\Provider\LaravelServiceProvider::class,
-        'Tymon\JWTAuth\Providers\JWTAuthServiceProvider'
-
+        'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
+        Barryvdh\Cors\ServiceProvider::class,
+        // Clockwork\Support\Laravel\ClockworkServiceProvider::class,
     ],
 
     /*

@@ -13,10 +13,14 @@
                     <i class="fa fa-star text-warning"></i>
                 </p>
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Lift Requests</li>
-                <li class="list-group-item">Lift History</li>
-                <li class="list-group-item">Activity Log</li>
+            <div class="list-group list-group-flush">
+
+                <router-link active-class="active" :to="{name: 'driver-index'}" class="list-group-item list-group-item-action">Home</router-link>
+                <router-link active-class="active" :to="{name: 'driver-routes'}" class="list-group-item list-group-item-action">My Routes</router-link>
+                <router-link active-class="active" :to="{name: 'new-route'}" class="list-group-item list-group-item-action">New Route</router-link>
+
+                <router-link active-class="active" :to="{name: 'browse-routes'}" class="list-group-item list-group-item-action">Browse Routes</router-link>
+                <router-link active-class="active" :to="{name: 'commuter-requests'}" class="list-group-item list-group-item-action">My Requests</router-link>
             </ul>
         </div>
     </div>

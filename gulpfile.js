@@ -14,9 +14,10 @@ require('laravel-elixir-vue-2');
  */
 
 elixir(mix => {
+     
     mix.sass('app.scss')
-       .webpack('app.js');
-
-    mix.copy('resources/images', 'public/images')
-    mix.copy('node_modules/font-awesome/fonts/*.*', 'public/fonts')
+       .webpack('app.js')
+       .stylus('./node_modules/flatpickr/src/style/flatpickr.styl', './public/css/flatpickr.css')
+       .copy('resources/images', 'public/images')
+       .copy('node_modules/font-awesome/fonts/*.*', 'public/fonts')
 });

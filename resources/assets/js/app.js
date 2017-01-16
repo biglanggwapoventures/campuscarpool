@@ -16,14 +16,11 @@ require('./bootstrap');
 
 
 Vue.component('form-input', require('./components/Input.vue'));
-Vue.component('user-card', require('./components/UserCard.vue'));
-Vue.component('user-navbar', require('./components/UserNavbar.vue'));
-Vue.component('driver-route', require('./components/DriverRoute.vue'));
-Vue.component('search-ride', require('./components/SearchRide.vue'));
-Vue.component('post-route', require('./components/driver/PostRoute.vue'));
+Vue.component('ccbutton', require('./components/StateButton.vue'));
 // Vue.component('search-place', require('./components/SearchPlace.vue'));
 
-Vue.http.options.root = 'http://localhost:8000/api';
+Vue.http.options.root = 'http://campuscarpool.dev/api';
+// Vue.http.options.root = 'http://localhost:8000/api';
 // Vue.http.options.loginData.url = 'http://localhost:8000/api';
 
 const router = new VueRouter({
@@ -41,9 +38,74 @@ const router = new VueRouter({
       meta: {auth: false},
     },
     { 
-      path: '/home', 
+      path: '/dashboard', 
       component: require('./components/Home.vue'),
-      name: 'home',
+      name: 'dashboard',
+      meta: {auth: true},
+      children: [
+        {
+          path: 'driver',
+          component: require('./components/driver/DriverTemplate.vue'),
+          name: 'driver-dashboard',
+          children: [
+            {
+              path: 'index',
+              component: require('./components/driver/DriverHome.vue'),
+              name: 'driver-index'
+            },
+            {
+              path: 'routes',
+              component: require('./components/driver/DriverRoutes.vue'),
+              name: 'driver-routes',
+            },
+            {
+              path: 'route/:id/view-requests',
+              component: require('./components/driver/ViewRequests.vue'),
+              name: 'driver-route-view-requests'
+            },
+          ]
+        },
+        {
+          path: 'commuter',
+          component: require('./components/commuter/CommuterTemplate.vue'),
+          name: 'commuter-dashboard',
+          children: [
+            {
+              path: 'index',
+              component: require('./components/commuter/CommuterHome.vue'),
+              name: 'commuter-index'
+            },
+            {
+              path: 'browse-routes',
+              component: require('./components/commuter/BrowseRoutes.vue'),
+              name: 'browse-routes',
+            },
+            {
+              path: 'my-requests',
+              component: require('./components/commuter/MyRequests.vue'),
+              name: 'commuter-requests',
+            },
+          ]
+
+        }
+      ]
+    },
+    { 
+      path: '/new-route', 
+      component: require('./components/driver/PostRide.vue'),
+      name: 'new-route',
+      meta: {auth: true},
+    },
+    {
+      path: '/view-route/:id',
+      component: require('./components/commuter/ViewDriverRoute.vue'),
+      name: 'view-route',
+      meta: {auth: true},
+    },
+    {
+      path: '/preview-route/:id',
+      component: require('./components/driver/PreviewRoute.vue'),
+      name: 'preview-route',
       meta: {auth: true},
     },
   ]
@@ -58,7 +120,9 @@ Vue.use(require('@websanova/vue-auth'), {
   tokenName: 'token',
   authRedirect: {
     path: '/'
-  }
+  },
+  notFoundRedirect: {path: '/dashboard'}
 });
+// Vue.use(ElementUI)
 
 const app = new Vue({router}).$mount('#app')

@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Validator;
-use Dingo\Api\Routing\Helpers;
 use App\User;
 
 class RegisterController extends Controller
 {
-    use Helpers;
-
     public function __invoke(Request $request)
     {
         $data = $request->all();
@@ -28,7 +25,7 @@ class RegisterController extends Controller
             throw new \Dingo\Api\Exception\StoreResourceFailedException('Could not create new user.', $v->errors());
         }
 
-        User::create([
+        $user = User::create([
             'role' => $data['role'],
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
@@ -37,8 +34,9 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
+        return $this->response->array([
+            'user' => $user,
+        ]);
 
-
-        return $this->response->created();
     }
 }

@@ -31,7 +31,7 @@
                     <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
                 </span>
             </div>
-                <a class="form-text text-xs-right" href="#">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent drop-off point</a>
+                <a class="form-text text-xs-right" href="javascript:void(0)">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent drop-off point</a>
         </div>
     </form>
 </div>

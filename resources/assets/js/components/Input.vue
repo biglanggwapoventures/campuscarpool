@@ -1,9 +1,9 @@
 <template>
-<div class="form-group" v-bind:class="{ 'has-danger': errors.length > 0 }">
-    <label class="form-control-label" v-show="label" v-bind:class="labelClassName ? labelClassName : ''">{{ label }}</label>
-    <input ref="input" v-bind:type="inputType" :id="id" v-bind:value="value" v-on:input="updateValue($event.target.value)" class="form-control" v-bind:class="inputClassName ? inputClassName : ''">
-    <div class="form-control-feedback" v-show="errors.length > 0">{{ errors[0] }}</div>
-</div>
+    <div class="form-group" v-bind:class="{ 'has-danger': errors.length > 0 }">
+        <label class="form-control-label" v-show="label" v-bind:class="labelClassName ? labelClassName : ''">{{ label }}</label>
+        <input ref="input" v-bind:type="inputType" :id="id" v-bind:value="value" v-on:input="updateValue($event.target.value)" class="form-control" v-bind:class="inputClassName ? inputClassName : ''">
+        <div class="form-control-feedback" v-show="errors.length > 0">{{ errors[0] }}</div>
+    </div>
 </template>
 
 <script>
