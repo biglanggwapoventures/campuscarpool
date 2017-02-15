@@ -40,7 +40,7 @@ class RouteRequest extends FormRequest
     {
         $rules = [
             'type' => 'required|in:CAMPUS,HOME',
-            'place.id' => 'required',
+            // 'place.id' => 'required',
             'place.latitude' => 'required',
             'place.longitude' => 'required',
             'place.formatted_address' => 'required',

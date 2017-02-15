@@ -38,6 +38,10 @@ class DriverRoute extends Model
         'deleted_at'
     ];
 
+    protected $casts = [
+        'ratings_done' => 'boolean'
+    ];
+
     public function scopeActive($query)
     {
         return $query->whereRaw('departure_datetime > NOW()');
@@ -67,5 +71,17 @@ class DriverRoute extends Model
     {
         return $this->numSeatsTaken() >= $this->max_passenger;
     }
+
+    public function hasAvailableSeats()
+    {
+        return $this->numSeatsTaken() < $this->max_passenger;
+    }
+
+
+    public function isDone()
+    {
+        return $this->departure_datetime->lt(Carbon::now());
+    }
+    
     
 }

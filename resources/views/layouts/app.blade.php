@@ -21,6 +21,7 @@
 <body>
     <div id="app">
         <router-view></router-view>
+        <alert ref="alert"></alert>
     </div>
     <!-- Scripts -->
      <script src="{{ elixir('js/app.js') }}"></script>

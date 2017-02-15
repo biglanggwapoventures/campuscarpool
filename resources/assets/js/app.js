@@ -17,6 +17,7 @@ require('./bootstrap');
 
 Vue.component('form-input', require('./components/Input.vue'));
 Vue.component('ccbutton', require('./components/StateButton.vue'));
+Vue.component('alert', require('./components/messages/Alert.vue'));
 // Vue.component('search-place', require('./components/SearchPlace.vue'));
 
 Vue.http.options.root = 'http://campuscarpool.dev/api';
@@ -36,6 +37,23 @@ const router = new VueRouter({
       component: require('./components/RegisterForm.vue'),
       name: 'register',
       meta: {auth: false},
+    },
+     { 
+      path: '/admin', 
+      component: require('./components/admin/AdminPage.vue'),
+      meta: {auth: true},
+      children: [
+        {
+          path: '/',
+          name: 'admin.users',
+          component:  require('./components/admin/Users.vue'),
+        },
+        {
+          path: 'view-user/:id',
+          name: 'admin.users.view',
+          component:  require('./components/admin/ViewUser.vue'),
+        },
+      ]
     },
     { 
       path: '/dashboard', 
@@ -59,7 +77,7 @@ const router = new VueRouter({
               name: 'driver-routes',
             },
             {
-              path: 'route/:id/view-requests',
+              path: 'route/:id/view-requests/:type?',
               component: require('./components/driver/ViewRequests.vue'),
               name: 'driver-route-view-requests'
             },
@@ -81,12 +99,36 @@ const router = new VueRouter({
               name: 'browse-routes',
             },
             {
-              path: 'my-requests',
+              path: 'my-requests/:type?',
               component: require('./components/commuter/MyRequests.vue'),
               name: 'commuter-requests',
             },
           ]
 
+        },
+
+        { 
+          path: '/profile', 
+          component: require('./components/Profile.vue'),
+          // name: 'profile',
+          meta: {auth: true},
+          children: [
+            {
+              path: '/',
+              component: require('./components/ProfileBasicInformation.vue'),
+              name: 'profile-basic-information'
+            },
+            {
+              path: 'change-password',
+              component: require('./components/ProfileChangePassword.vue'),
+              name: 'profile-change-password'
+            },
+            {
+              path: 'requirements',
+              component: require('./components/ProfileRequirements.vue'),
+              name: 'profile-requirements'
+            },
+          ]
         }
       ]
     },
@@ -103,9 +145,21 @@ const router = new VueRouter({
       meta: {auth: true},
     },
     {
-      path: '/preview-route/:id',
+      path: '/preview-route/:routeId/:id',
       component: require('./components/driver/PreviewRoute.vue'),
       name: 'preview-route',
+      meta: {auth: true},
+    },
+    {
+      path: '/preview-route/:id',
+      component: require('./components/driver/PreviewRouteAll.vue'),
+      name: 'preview-route-all',
+      meta: {auth: true},
+    },
+    {
+      path: '/preview-request/:requestId',
+      component: require('./components/commuter/PreviewRequest.vue'),
+      name: 'preview-request',
       meta: {auth: true},
     },
   ]
@@ -123,6 +177,5 @@ Vue.use(require('@websanova/vue-auth'), {
   },
   notFoundRedirect: {path: '/dashboard'}
 });
-// Vue.use(ElementUI)
 
-const app = new Vue({router}).$mount('#app')
+const app = new Vue({router}).$mount('#app');

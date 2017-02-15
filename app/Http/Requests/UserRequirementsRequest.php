@@ -34,7 +34,7 @@ class UserRequirementsRequest extends FormRequest
             $data += [
                 'vehicle_type' => 'required|in:CAR,MOTORCYCLE',
                 'vehicle_model' => 'required',
-                'vehicle_plate_number' => 'required',
+                'vehicle_plate_number' => 'required|unique:driver_profile',
                 'drivers_license' => 'required|image|max:5000'
             ];
         }

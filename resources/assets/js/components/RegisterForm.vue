@@ -36,52 +36,57 @@
                             </div>
                             <hr>
                             <div class="clearfix">
-                                <a class="btn btn-info float-xs-right" href="javascript:void(0)" v-on:click="next()" v-bind:class="{'disabled' : !tempUser.role}" role="button">Next</a>
+                                <a class="btn btn-success float-xs-right" href="javascript:void(0)" v-on:click="next()" v-bind:class="{'disabled' : !tempUser.role}" role="button">Next</a>
                             </div>
                         </div>
                         <div class="card-block " v-show="step === 2">
                             <form v-on:submit.prevent="submitBasicInfo()"> 
-                            <div class="row">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <file-input   :errors="errorMessages.display_photo" label="Display Photo"  v-model="tempUser.display_photo"></file-input> 
+                                    </div>
+                                </div>
+                                <div class="row">
 
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.firstname" label="First name" :errors="errorMessages.firstname"></form-input>
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.firstname" label="First name" :errors="errorMessages.firstname"></form-input>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.lastname" label="Last name" :errors="errorMessages.lastname"></form-input>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.lastname" label="Last name" :errors="errorMessages.lastname"></form-input>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.id_number" label="ID Number" :errors="errorMessages.id_number"></form-input>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.email" label="Email address" input-type="email" :errors="errorMessages.email"></form-input>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.id_number" label="ID Number" :errors="errorMessages.id_number"></form-input>
+                            
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.password" label="Password" input-type="password" :errors="errorMessages.password"></form-input>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <form-input v-model="tempUser.password_confirmation" label="Password Confirmation" input-type="password" :errors="errorMessages.password_confirmation"></form-input>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.email" label="Email address" input-type="email" :errors="errorMessages.email"></form-input>
+                                <hr>
+                                <div class="clearfix">
+                                    <a class="btn btn-success" role="button" href="javascript:void(0)" v-on:click="previous()">Previous</a>
+                                    <button class="btn btn-success float-xs-right" type="submit" href="javascript:void(0)" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Next</button>
                                 </div>
-                            </div>
-                        
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.password" label="Password" input-type="password" :errors="errorMessages.password"></form-input>
-                                </div>
-                                <div class="col-sm-6">
-                                    <form-input v-model="tempUser.password_confirmation" label="Password Confirmation" input-type="password" :errors="errorMessages.password_confirmation"></form-input>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="clearfix">
-                                <a class="btn btn-info" role="button" href="javascript:void(0)" v-on:click="previous()">Previous</a>
-                                <button class="btn btn-info float-xs-right" type="submit" href="javascript:void(0)" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Next</button>
-                            </div>
-                        </form>
+                            </form>
                     </div>
                     <div class="card-block" v-show="step === 3">
                         <form v-on:submit.prevent="submitRequirements()">
                             <div class="row"> 
                                 <div class="col-sm-6">
-                                    <file-input id="school-id" v-on:file-changed="addPhoto" :errors="errorMessages.school_id" label="School ID"  file-label="school_id"></file-input> 
+                                    <file-input id="school-id"  :errors="errorMessages.school_id" label="School ID" v-model="tempUser.requirements.school_id" ></file-input> 
                                 </div>
                                 <div class="col-sm-6" v-if="tempUser.role === 'DRIVER'">
-                                    <file-input id="drivers-license" v-on:file-changed="addPhoto" :errors="errorMessages.drivers_license" label="School ID"  file-label="drivers_license"></file-input>
+                                    <file-input id="drivers-license"  :errors="errorMessages.drivers_license" label="Driver's License" v-model="tempUser.requirements.drivers_license" ></file-input> 
                                 </div>
                             </div>
                             <div v-if="tempUser.role === 'DRIVER'">   
@@ -89,7 +94,7 @@
                                     <div class="col-sm-6">
                                          <form-select 
                                             v-model="tempUser.requirements.vehicle_type" 
-                                            label="Vehicle Model" 
+                                            label="Vehicle Type" 
                                             :errors="errorMessages.vehicle_type" 
                                             :options="[{value:'MOTORCYCLE', text: 'Motorcycle'}, {value:'CAR', text: 'Car'}]">
                                         </form-select>
@@ -102,7 +107,7 @@
                             </div>
                             <hr>
                             <div class="clearfix">
-                                <button class="btn btn-info float-xs-right" type="submit" href="javascript:void(0)" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Finish</button>
+                                <button class="btn btn-success float-xs-right" type="submit" href="javascript:void(0)" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Finish</button>
                             </div>
                         </form>
                     </div>
@@ -115,7 +120,8 @@
 <script>
     export default {
         components: {
-            'file-input': require('./File.vue'),
+            // 'file-input': require('./File.vue'),
+            'file-input': require('./FileInput.vue'),
             'form-select' : require('./Select.vue')
         },
         data(){
@@ -124,6 +130,7 @@
                 user: new FormData(),
                 requirements: new FormData(),
                 tempUser : {
+                    display_photo: null,
                     firstname: '',
                     lastname: '',
                     id_number: '',
@@ -146,6 +153,11 @@
             }
         },
         watch: {
+            'tempUser.display_photo' (val){
+                console.log(val)
+                if(val) this.user.set('display_photo', val)
+                else this.user.remove('display_photo')
+            },
             'tempUser.firstname' (val){
                 this.user.set('firstname', val)
             },
@@ -176,6 +188,14 @@
             },
             'tempUser.requirements.vehicle_plate_number'(val){
                 this.requirements.set('vehicle_plate_number', val)
+            },
+            'tempUser.requirements.school_id'(val){
+                if(val) this.requirements.set('school_id', val)
+                else this.requirements.remove('school_id')
+            },
+            'tempUser.requirements.drivers_license'(val){
+                if(val) this.requirements.set('drivers_license', val)
+                else this.requirements.remove('drivers_license')
             },
         },
         methods: {
@@ -220,7 +240,6 @@
                     })
             },
             addPhoto(value){
-                console.log(value)
                 this.requirements.set(value.label, value.file);
             },
             next(){

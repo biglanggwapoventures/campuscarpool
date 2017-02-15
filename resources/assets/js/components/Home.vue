@@ -20,6 +20,19 @@
         components : {
             'user-card' : require('./UserCard.vue'),
             'user-navbar' : require('./UserNavbar.vue')
+        },
+        mounted() {
+            // switch(this.$auth.user().role){
+            //     case 'COMMUTER':
+            //         this.$router.replace({name: 'commuter-index'});
+            //         break;
+            //     case 'DRIVER':
+            //         this.$router.replace({name: 'driver-index'});
+            //         break;
+            //     default:
+            //         break;
+            // }
+            
         }
     }
 </script>

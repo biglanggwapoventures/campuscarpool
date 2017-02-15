@@ -1,46 +1,37 @@
 <template>
-<div class="card card-block">
-    <form>
-        <div class="row">
-            <div class="col-sm-12 ">
-                <label class="custom-control custom-radio">
-                    <input value="home" v-model="commuteType" type="radio" class="custom-control-input">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">I am heading home</span>
-                </label>
-                <label class="custom-control custom-radio">
-                    <input value="campus" v-model="commuteType" type="radio" class="custom-control-input">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">I am heading to campus</span>
-                </label>
-            </div>
+
+    <form class="form-inline" v-on:submit.prevent="searchRoutes">
+        <div class="form-group">
+            <ccselect v-model="type" :options="[{value: 'HOME', text: 'I am heading to home'}, {value: 'CAMPUS', text: 'I am heading to campus'}]" select-placeholder="Choose a carpool type" :hide-placeholder="true"></ccselect>
         </div>
-        <div class="form-group"  v-if="commuteType === 'campus'">
-                <div class="input-group">
-                <input type="text" class="form-control" placeholder="Enter pick-up point">
-                <span class="input-group-btn">
-                    <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
-                </span>
-            </div>
-            <a class="form-text text-xs-right" href="#">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent pick-up point </a>
+        <i class="fa fa-at fa-fw"></i>
+        <div class="form-group">
+            <datepicker v-model="datetime"></datepicker>
         </div>
-        <div class="form-group"  v-if="commuteType === 'home'">
-                <div class="input-group">
-                <input type="text" class="form-control" placeholder="Enter drop-off point">
-                <span class="input-group-btn">
-                    <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
-                </span>
-            </div>
-                <a class="form-text text-xs-right" href="javascript:void(0)">  <i class="fa fa-mouse-pointer fa-fw"></i> Use most recent drop-off point</a>
-        </div>
+        <button type="submit" class="btn btn-success">Search</button>
     </form>
-</div>
 </template>
 <script>
     export default {
+        mounted() {
+            this.searchRoutes();
+        },
+        components: {
+            'datepicker': require('./DateTimePicker.vue'),
+            'ccselect' : require('./Select.vue')
+        },
         data(){
             return {
-                commuteType:'home'
+                type:'HOME',
+                datetime: Date.now(),
+            }
+        },
+        methods: {
+            searchRoutes(){
+                this.$emit('search-routes', {
+                    type: this.type,
+                    datetime: this.datetime
+                });
             }
         }
     }

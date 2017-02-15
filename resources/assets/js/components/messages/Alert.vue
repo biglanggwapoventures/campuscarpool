@@ -19,6 +19,9 @@
     export default {
         mounted(){
             modal = $('#'+this.id);
+            this.$on('alert-show', () => {
+                console.log('erlr')
+            })
         },
         props: {
             id: {

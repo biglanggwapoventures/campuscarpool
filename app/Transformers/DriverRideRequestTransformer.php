@@ -12,18 +12,28 @@ class DriverRideRequestTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $availableIncludes = [
+    protected $defaultIncludes = [
         'commuter'
     ];
 
     public function transform(RideRequest $rideRequest)
     {
+        if($rideRequest->accepted)
+            $status = 'Accepted';
+        else if($rideRequest->rejected)
+            $status = 'Rejected';
+        else
+            $status = 'Pending';
+        
         return [
            'id' => (int)$rideRequest->id,
            'commuter_id' => (int)$rideRequest->commuter_id,
            'num_seats' => (int)$rideRequest->num_seats,
            'accepted' => $rideRequest->accepted,
+           'latitude' => $rideRequest->location_latitude,
+           'longitude' => $rideRequest->location_longitude,
            'rejected' => $rideRequest->rejected,
+           'status' => $status,
            'requested_at' => $rideRequest->created_at->format('M d, Y h:i A')
 	    ];
     }

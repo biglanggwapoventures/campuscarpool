@@ -13,7 +13,7 @@
 }
 .main-content{
     min-height: 100%;
-    background: url(./../images/boxed-bg.png) repeat;
+    background:#f0f0f0;
     hr{
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
@@ -52,6 +52,17 @@
         
     }
 
+    .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+
+        background-color: #71bf44;
+        border-color: #5cb32a;
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .nav-link.active:focus, .nav-pills .nav-link.active:hover, .nav-pills .nav-item.open .nav-link, .nav-pills .nav-item.open .nav-link:focus, .nav-pills .nav-item.open .nav-link:hover {
+        background-color: #71bf44;
+    }
+
+
     
 
 }
@@ -80,10 +91,6 @@
             text-decoration: none;
         }
     }
-}
-
-.form-control-feedback, .form-text{
-    font-size: 0.8rem;
 }
 /* Optional: Makes the sample page fill the window. */
 html, body {

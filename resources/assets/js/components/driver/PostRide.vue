@@ -11,27 +11,33 @@
                                     <label class="custom-control custom-radio">
                                         <input v-model="routeData.type" value="CAMPUS" type="radio" class="custom-control-input">
                                         <span class="custom-control-indicator"></span>
-                                        <span class="custom-control-description">I am heading to campus</span>
+                                        <span class="custom-control-description font-weight-bold">I am heading to campus</span>
                                     </label>
                                     <label class="custom-control custom-radio">
                                         <input v-model="routeData.type" value="HOME"  type="radio" class="custom-control-input">
                                         <span class="custom-control-indicator"></span>
-                                        <span class="custom-control-description">I am heading home</span>
+                                        <span class="custom-control-description font-weight-bold">I am heading home</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <form-input 
-                            v-model="routeData.place.formatted_address" 
-                            :label="routeData.type === 'CAMPUS' ? 'Your origin address' : 'Your home address'" 
-                            id="place" 
-                            inputClassName="form-control-sm" 
-                            labelClassName="mb-0"
-                            :errors="errorMessages['place.id']">
-                        </form-input>
+
+                        <ccplace 
+                            label="Search for a specific place or address" 
+                            id="search-place"
+                            label-class="mb-0 font-weight-bold"
+                            v-on:place-changed="placeChanged">
+                        </ccplace>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold mb-0">{{ placeLabel }}</label>
+                            <p class="form-control-static pt-0 "><em>{{ routeData.place.formatted_address || 'Please use the address search above or choose a location on the map'}}</em></p>
+                        </div>
+
                         <datetimepicker 
                             id="datetimepicker" 
                             label="Departure date and time"
+                            label-class="mb-0 font-weight-bold"
                             v-model="routeData.departure_datetime"
                             :errors="errorMessages.departure_datetime">
                         </datetimepicker>
@@ -40,8 +46,7 @@
                                 <form-input 
                                     v-model="routeData.fare_contribution" 
                                     label="Fare contribution" 
-                                    inputClassName="form-control-sm"  
-                                    labelClassName="mb-0"
+                                    label-class-name="mb-0 font-weight-bold"
                                     :errors="errorMessages.fare_contribution">
                                 </form-input>
                             </div>
@@ -49,8 +54,7 @@
                                 <form-input 
                                     v-model="routeData.max_passenger" 
                                     label="Max passenger" 
-                                    inputClassName="form-control-sm"  
-                                    labelClassName="mb-0"
+                                    label-class-name="mb-0 font-weight-bold"
                                     :errors="errorMessages.max_passenger">
                                 </form-input>
                             </div>
@@ -58,9 +62,8 @@
                         <form-input 
                             v-model="routeData.additional_details" 
                             label="Additional route details" 
-                            inputClassName="form-control-sm" 
-                             labelClassName="mb-0"
-                             :errors="errorMessages.max_passenger">
+                            label-class-name="mb-0 font-weight-bold"
+                            :errors="errorMessages.max_passenger">
                         </form-input>
                         <div class="list-group" v-show="routeChoices.length > 0">
                             <a href="javascript:void(0)" @click="renderRoute(c.index)" class="list-group-item list-group-item-action" v-for="c in routeChoices">
@@ -75,7 +78,10 @@
                 </div>
             </div>
             <div class="col-md-9 pl-0">
-                <div id="map"></div>
+                <!--<div id="map"></div>-->
+                <ccmap :init-directions-service="true" :init-directions-renderer="true" ref="ccmap" v-on:map-clicked="mapClicked">
+                    <i class="fa fa-spin fa-spinner"></i> 
+                </ccmap>
             </div>
         </div>
     </div>
@@ -84,38 +90,12 @@
 <script>
     
     export default {
-        mounted (){
-           
-            var GoogleMapsLoader = require('google-maps');
-
-            GoogleMapsLoader.KEY = 'AIzaSyCueneuLIZWACMGBDBQaYix4vE9X1UkP_0';
-            GoogleMapsLoader.REGION = 'PH';  
-            GoogleMapsLoader.LIBRARIES = ['places'];    
-            
-            GoogleMapsLoader.load((google)  => {
-                this.google = google;
-                this.initMap();
-            });
-
-            
-        },
-        props: [
-
-        ],
        data (){
            return { 
                 origin : null,
                 destination : null,
-                google : null,
-                map : null,
-                directionsService : null,
-                directionsDisplay : null,
-                distanceMatrixService : null,
-                placesService : null,
-                placeInput : null,
-                placeAutocomplete : null,
                 constants : {
-                    CAMPUS_LATLNG: null
+                    USC_PLACE_ID: "ChIJxwSgq-yYqTMRRbMQVEdFmDM"
                 },
                 routeData: {
                     type: 'CAMPUS',
@@ -135,78 +115,17 @@
                 errorMessages: {}
            }
        },
-       watch: {
-            'routeData.type' (){
-                this.drawRoute();
-            },
-        },
+      
        methods: {
-           initMap(){
-                this.constants.CAMPUS_LATLNG = new this.google.maps.LatLng(10.351887545991266, 123.9138400554657);
-                this.map = new this.google.maps.Map(document.getElementById('map'), {
-                    center: this.constants.CAMPUS_LATLNG,
-                    zoom: 18,
-                    type: 'hybrid'
-                });
-
-                this.directionsService = new this.google.maps.DirectionsService;
-                this.directionsDisplay = new this.google.maps.DirectionsRenderer({
-                    map: this.map,
-                    draggable: true,
-                });
-                this.placesService = new this.google.maps.places.PlacesService(this.map);
-                this.distanceMatrixService = new this.google.maps.DistanceMatrixService();
-
-
-                this.initPlaceAutocomplete();
-           },
-           initPlaceAutocomplete(){
-                this.placeInput = document.getElementById('place');
-                this.placeAutocomplete = new this.google.maps.places.Autocomplete(this.placeInput);
-                this.placeAutocomplete.addListener('place_changed', (val) => {
-                    var place = this.placeAutocomplete.getPlace();
-                    if (!place.geometry) {
-                        window.alert("Autocomplete's returned place contains no geometry");
-                        return;
-                    }
-                    this.expandViewportToFitPlace(place);
- 
-                    this.routeData.place.id = place.place_id;
-                    this.routeData.place.formatted_address = place.name + ', ' + place.formatted_address;
-                    this.routeData.place.latitude = place.geometry.location.lat();
-                    this.routeData.place.longitude = place.geometry.location.lng();
-
-                    this.drawRoute();
-                });
-           },
-           expandViewportToFitPlace(place){
-                if (place.geometry.viewport) {
-                    this.map.fitBounds(place.geometry.viewport);
-                } else {
-                    this.map.setCenter(place.geometry.location);
-                    this.map.setZoom(18);
-                }
-           },
            drawRoute() {
-                if (!this.routeData.place.id) return;
+               if(!this.origin || !this.destination) return;
 
-                this.origin = this.routeData.type === 'CAMPUS' ? {placeId: this.routeData.place.id} : this.constants.CAMPUS_LATLNG,
-                this.destination = this.routeData.type === 'CAMPUS' ? this.constants.CAMPUS_LATLNG : {placeId: this.routeData.place.id};
-                
-                var departureTime = this.routeData.departureDateTime ? new Date(this.routeData.departureDateTime) : new Date();
+                this.$refs.ccmap.route(this.origin, this.destination)
+                    .then((res) => {
 
-                this.directionsService.route({
-                    origin: this.origin,
-                    destination: this.destination,
-                    travelMode: 'DRIVING',
-                    provideRouteAlternatives: true,
-                }, (response, status) => {
-                    if (status === 'OK') {
-                        // console.log(response)
                         this.routeChoices = [];
-                        this.directionsDisplay.setDirections(response);
                         this.routeData.route_index = 0;
-                        response.routes.forEach((v, i) => {
+                        res.routes.forEach((v, i) => {
                             this.routeChoices.push({
                                 path: v.summary,
                                 distance: v.legs[0].distance.text,
@@ -214,14 +133,15 @@
                                 index: i
                             })
                          })
-                    } else {
-                        console.log('error on route');
-                    }
-                });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
             },
             renderRoute(index){
+                if(index ===  this.routeData.route_index) return;
                 this.routeData.route_index = index;
-                this.directionsDisplay.setRouteIndex(index);
+                this.$refs.ccmap.setRouteIndex(index);
             },
             submitRoute(){
                 this.$http.post('driver-route', this.routeData)
@@ -234,11 +154,57 @@
                         }
                         window.alert('Error while trying to save new route');
                     })
+            },
+            placeChanged(place) {
+                if (!place.geometry) {
+                    this.alert.show('hello');
+                    return;
+                }
+                this.$refs.ccmap.expandViewportToFitPlace(place);
+
+                this.routeData.place.latitude = place.geometry.location.lat();
+                this.routeData.place.longitude = place.geometry.location.lng();
+                this.routeData.place.formatted_address = `${place.name}, ${place.formatted_address}`
+                this.setLocation();
+                this.drawRoute();
+            },
+            mapClicked(place){
+                this.routeData.place.formatted_address = place.address
+                this.routeData.place.latitude = place.lat;
+                this.routeData.place.longitude = place.lng;
+
+                this.setLocation();
+                this.drawRoute();
+            },
+            setLocation(){
+                var location = this.routeData.place.id ? { placeId: this.routeData.place.id } : new this.$refs.ccmap.google.maps.LatLng(this.routeData.place.latitude, this.routeData.place.longitude),
+                    campus = { placeId: this.constants.USC_PLACE_ID };
+
+                if(this.routeData.type === 'CAMPUS'){
+                    this.origin = location;
+                    this.destination = campus;
+                }else{
+                    this.origin = campus;
+                    this.destination = location;
+                }
             }
        },
+
        components: {
             'datetimepicker': require('./../DateTimePicker.vue'),
             'back': require('./../BackTo.vue'),
-        }
+            'ccmap': require('./../map/Map.vue'),
+            'ccplace': require('./../map/Place.vue')
+        },
+        computed: {
+            placeLabel() {
+                return this.routeData.type === 'CAMPUS' ? 'Your origin address' : 'Your home address';
+            }
+        },
+        watch: {
+            'routeData.type' (){
+                this.drawRoute();
+            },
+        },
     }
 </script>

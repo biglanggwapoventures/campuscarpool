@@ -10,18 +10,9 @@
                       </div>
                       <div class="card-block">
                         <form  v-on:submit.prevent="login()">
-                            <div class="alert alert-danger text-xs-center" v-show="authError">{{authError}}</div>
-                            <form-input v-model="auth.id_number" label="ID Number"></form-input>
-                            <form-input v-model="auth.password" label="Password" input-type="password"></form-input>
-                          <!--<div class="form-group">
-                            <label for="formGroupExampleInput" class="mb-0">Username</label>
-                            <input type="text" class="form-control form-control-sm" id="formGroupExampleInput" v-model="auth.id_number">
-                          </div>
-                          <div class="form-group">
-                            <label for="formGroupExampleInput" class="mb-0">Password</label>
-                            <input type="text" class="form-control form-control-sm" id="formGroupExampleInput" v-model="auth.password">
-                          </div>-->
-                          <button type="submit" class="btn btn-primary" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Login</button>
+                            <form-input v-model="auth.id_number" label="ID Number" :errors="errors.id_number"></form-input>
+                            <form-input v-model="auth.password" label="Password" input-type="password" :errors="errors.password"></form-input>
+                             <button type="submit" class="btn btn-success" v-bind:disabled="loading"><i class="fa fa-spin fa-spinner" v-show="loading"></i> Login</button>
                            <!--<router-link class="btn btn-primary" to="home">Login</router-link>-->
                           <hr>
                             
@@ -38,6 +29,9 @@
 <script>
     // var auth = require('@websanova/vue-auth');
     export default {
+        components: {
+            'callout': require('./Callout.vue')
+        },
         data(){
             return {
                 logoUrl: './../images/LOGO5.png',
@@ -45,7 +39,7 @@
                     id_number: '',
                     password: ''
                 },
-                authError: false,
+                errors: {},
                 loading: false
             }
         },
@@ -55,10 +49,27 @@
                 this.authError = false;
                 this.$auth.login({
                     body: this.auth,
-                    redirect: {name: 'dashboard'},
+                    redirect: false,
                     error(res) {
-                        this.authError = res.body.message;
                         this.loading = false;
+                        this.errors = res.body.errors;
+                        this.auth.password = '';
+                    },
+                    success(res){
+                        switch(res.body.user.role){
+                            case 'DRIVER': 
+                                this.$router.replace({'name' : 'driver-routes'});
+                                
+                                break;
+                                
+                            case 'COMMUTER':
+                                this.$router.replace({'name' : 'browse-routes'})
+                                 break;
+
+                            case 'ADMIN': 
+                                this.$router.replace({'name' : 'admin.users'})
+                                break;
+                        }
                     }
                 });
             }

@@ -2,10 +2,20 @@
     <tr>
         <td>{{ departure }}</td>
         <td>{{ driver }}</td>
-        <td>{{ destination }}</td>
-        <td>{{ getStatus }}</td>
-        <td></td>
-        <td><a href="javascript:void(0)" class="btn btn-sm btn-secondary"  @click="openChat"><i class="fa fa-envelope"></i> Message</a></td>
+        <td>
+            <dl>
+                <dt>From:</dt>
+                <dd class="mb-0">{{ routeFrom }}</dd>
+                <dt>To:</dt>
+                <dd>{{ routeTo }}</dd>
+            </dl>
+        </td>
+        <td>N/A</td>
+        <td v-bind:class="status ? 'text-success' : 'text-danger'"> {{ status ? 'Finished' : 'Waiting' }}</td>
+        <td>
+            <a href="javascript:void(0)" class="btn btn-sm btn-secondary" @click="openChat"><i class="fa fa-fw fa-envelope"></i></a>
+            <router-link class="btn btn-sm btn-secondary" :to="{name: 'preview-request', params: {requestId: this.id}}"><i class="fa  fa-fw fa-map-pin"></i></router-link>
+        </td>
     </tr>
 </template>
 
@@ -15,9 +25,11 @@
             'id': Number,
             'driver-id': Number,
             'driver': String,
-            'status': String,
+            'status': Boolean,
             'departure': String,
-            'destination': String
+            'destination': String,
+            'route-from': String,
+            'route-to': String,
         },
         mounted() {
             
@@ -29,22 +41,10 @@
         },
         data(){
            return {}
-        },
-        computed: {
-            getStatus (){
-                switch(this.status){
-                    case 'A': 
-                        return 'Accepted'
-                    case 'R': 
-                        return 'Rejected'
-                    case 'P': 
-                        return 'Pending'
-                }
-            }
         }
     }
 </script>
 
-<style>
+<style lang="css">
 
 </style>

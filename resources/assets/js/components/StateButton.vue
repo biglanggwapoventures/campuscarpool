@@ -13,11 +13,9 @@
     export default {
         mounted(){
             this.$on('ajax-start', () => {
-                console.log('ajax-start')
                 this.isLoading = true;
             });
             this.$on('ajax-end', () => {
-                console.log('ajax-end')
                 this.isLoading = false;
             });
         },

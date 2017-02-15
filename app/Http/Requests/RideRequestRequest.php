@@ -4,10 +4,14 @@ namespace App\Http\Requests;
 
 use Dingo\Api\Http\FormRequest;
 use Illuminate\Validation\Factory as ValidationFactory;
+use App\DriveRoute;
+// use \Dingo\Api\Routing\Helpers;
 
 class RideRequestRequest extends FormRequest
 {
 
+    // use Helpers;
+    
     public function __construct(ValidationFactory $validationFactory)
     {
         $validationFactory->extend('coordinates',
@@ -15,7 +19,7 @@ class RideRequestRequest extends FormRequest
                 $coordinates = explode(',', $value);
                 return count(array_filter($coordinates, 'is_numeric')) === 2;
             },
-            'The :name must contain valid coordinates.'
+            'This field must contain valid coordinates.'
         );
     }
 
@@ -40,8 +44,10 @@ class RideRequestRequest extends FormRequest
             'driver_route_id' => 'required|exists:driver_routes,id',
             'num_seats' => 'integer|min:1|max:5',
             'message' => 'required',
-            'pickup' => 'required|coordinates',
-            'dropoff' => 'required|coordinates',
+            'formatted_address' => 'required',
+            // 'pickup' => 'coordinates',
+            // 'dropoff' => 'coordinates',
+            'coordinates' => 'required|coordinates',
         ];
         
         return $data;
@@ -50,20 +56,19 @@ class RideRequestRequest extends FormRequest
     public function messages ()
     {
         return [
-            'dropoff.latitude.required' => 'Please select a provide a dropoff point.',
-            'dropoff.longitude.required' => 'Please select a provide a dropoff point.',
-            'pickup.latitude.required' => 'Please select a provide a pickup point.',
-            'pickup.longitude.required' => 'Please select a provide a pickup point.'
+            
         ];
+
     }
 
     public function attributes()
     {
         return[
-            'dropoff.latitude' => 'dropoff', 
-            'dropoff.longitude' => 'dropoff', 
-            'pickup.latitude' => 'pickup', 
-            'pickup.longitude' => 'pickup', 
+            // 'dropoff.latitude' => 'dropoff', 
+            // 'dropoff.longitude' => 'dropoff', 
+            // 'pickup.latitude' => 'pickup', 
+            // 'pickup.longitude' => 'pickup', 
+            'coordinates' => 'location'
         ];
 
     }

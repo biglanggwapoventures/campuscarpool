@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-light bg-faded " style="margin-bottom:1rem;border-bottom:1px solid #ddd">
+    <nav class="navbar navbar-light " style="margin-bottom:1rem;border-bottom:1px solid #ddd;background: #fff">
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img :src="logoUrl"  height="30" class="d-inline-block align-top" alt="">

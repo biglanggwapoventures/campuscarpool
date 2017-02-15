@@ -13,7 +13,7 @@ class UserRequirements extends Controller
     {
         $user = $this->auth->user();
 
-        $schoolId = $request->file('school_id')->store("images/{$user->id}/school_id", 'public');
+        $schoolId = $request->file('school_id')->store("school_id/{$user->id}", 'public');
         $user->school_id_filename = $schoolId;
         $user->save();
         
@@ -25,7 +25,7 @@ class UserRequirements extends Controller
                 'vehicle_plate_number'
             ]);
 
-            $input['drivers_license_filename'] = $request->file('drivers_license')->store("images/{$this->user->id}/school_id", 'public');
+            $input['drivers_license_filename'] = $request->file('drivers_license')->store("drivers_license/{$this->user->id}", 'public');
 
             $user->profile()->save(new DriverProfile($input));
 

@@ -14,7 +14,8 @@ class DriverRouteDetailTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'driver'
+        'driver',
+        'acceptedRequests'
     ];
 
 	 /**
@@ -37,6 +38,7 @@ class DriverRouteDetailTransformer extends TransformerAbstract
                'longitude' => $driverRoute->place_longitude,
                'route_index' => $driverRoute->route_index,
            ],
+           'additional_details' => $driverRoute->additional_details,
            'num_seats_max' => (int) $driverRoute->max_passenger,
            'num_seats_taken' =>  $driverRoute->numSeatsTaken(),
            'departure_datetime' => $driverRoute->departure_datetime->format('M d, Y h:i A'),
@@ -53,5 +55,11 @@ class DriverRouteDetailTransformer extends TransformerAbstract
     {
         $driver = $driverRoute->driver;
         return $this->item($driver, new DriverTransformer);
+    }
+
+    public function includeAcceptedRequests(DriverRoute $driverRoute)
+    {
+        $requests = $driverRoute->acceptedRequests;
+        return $this->collection($requests, new DriverRideRequestTransformer);
     }
 }

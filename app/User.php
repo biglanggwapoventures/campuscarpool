@@ -4,12 +4,15 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Message;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -22,8 +25,17 @@ class User extends Authenticatable
         'lastname', 
         'email',
         'id_number',
+        'display_photo',
         'password'
     ];
+
+     protected $dates = [
+        'approved_at',
+        'rejected_at',
+        'created_at',
+        'deleted_at'
+    ];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -91,6 +103,29 @@ class User extends Authenticatable
     public function isDriver()
     {
         return $this->role === 'DRIVER';
+    }
+
+    public function fullname()
+    {
+        return "{$this->firstname} {$this->lastname}";
+    }
+
+    public function averageRating()
+    {
+       if($this->isCommuter()){
+            $result =  $this->rideRequests()
+                ->select(DB::raw('COUNT(id) AS num_ratings, AVG(commuter_rating) AS avg_rating'))
+                ->whereNull('cancelled_at')
+                ->where([
+                    ['accepted', '=', 1],
+                    ['commuter_rating', '>', 0]
+                ])
+                ->groupBy('commuter_id')
+                ->having('num_ratings', '>=', 3)
+                ->first();
+            return $result ? $result->avg_rating : 0;
+       }
+       
     }
     
 }

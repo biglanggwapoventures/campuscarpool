@@ -18,12 +18,18 @@ class CreateRideRequestsTable extends Migration
             $table->unsignedInteger('driver_route_id');
             $table->unsignedInteger('commuter_id');
             $table->unsignedInteger('num_seats')->default(1);
-            $table->decimal('pickup_latitude', 9, 6);
-            $table->decimal('pickup_longitude', 9, 6);
-            $table->decimal('dropoff_latitude', 9, 6);
-            $table->decimal('dropoff_longitude', 9, 6);
+
+            $table->decimal('location_longitude', 9, 6);
+            $table->decimal('location_latitude', 9, 6);
+            $table->string('location_address')->default('');
+
             $table->boolean('accepted')->default(false);
             $table->boolean('rejected')->default(false);
+
+            $table->enum('driver_rating', range(0, 5))->default(0);
+            $table->enum('commuter_rating', range(0, 5))->default(0);
+
+            $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
         });
     }

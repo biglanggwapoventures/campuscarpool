@@ -4,11 +4,13 @@
 
 // Variables
 @import "variables";
+@import "callout";
 
 // Bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/font-awesome/scss/font-awesome";
-@import url(./flatpickr.css);
+@import "node_modules/jquery-confirm/dist/jquery-confirm.min";
+@import "node_modules/flatpickr/dist/flatpickr.min.css";
 
 html,body{
     font-family:  'Source Sans Pro', sans-serif;
@@ -44,7 +46,7 @@ html,body{
         height:100vh;
         overflow:auto;
         .card-block{
-            padding-top:0.625rem
+            // padding-top:0.625rem
         }
     }
 }
@@ -52,9 +54,11 @@ html,body{
 #back-to-dashboard {
     a{
         padding:0.625rem 0.5rem 0.625rem 0.5rem;
-        border-bottom:1px solid #ddd;
+        border-bottom: 3px solid #5cb32a;
         cursor: pointer;
         display: block;
+        color: #fff;
+        background: #71bf44;
         text-align: center;
         &:hover{
             text-decoration: none;

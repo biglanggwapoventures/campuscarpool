@@ -6,12 +6,16 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\RouteRequest;
 use App\Http\Requests\RideRequestRequest;
-// use Dingo\Api\Routing\Helpers;
 use App\DriverRoute;
 use App\RideRequest;
 use App\Message;
+
 use Validator;
+use Illuminate\Validation\Rule;
+
 use Carbon\Carbon;
+use DB;
+use App\User;
 
 class DriverRouteController extends Controller
 {
@@ -46,11 +50,31 @@ class DriverRouteController extends Controller
 
     }
 
-    public function all()
+    public function all(Request $request)
     {
-        $routes = DriverRoute::active()->get();
+        // DB::enableQueryLog();
+
+        $routes = DriverRoute::active();
+        if(in_array($request->input('type'), ['CAMPUS','HOME'])){
+            $routes->where('type', '=', $request->input('type'));
+        }
+
+        $v = Validator::make($request->all(), [
+            'datetime' => 'present|date_format:"Y-m-d H:i"'
+        ]);
+
+        if(!$v->fails()){
+            if(trim($request->datetime)){
+                 $routes->where('departure_datetime', '>=', $request->input('datetime'))
+                    ->whereRaw("DATE(departure_datetime) = DATE('{$request->input('datetime')}')");;
+            }
+        }
+        
+        $result = $routes->orderBy('departure_datetime', 'ASC')->get();
+
+        // dd(DB::getQueryLog());
         return $this->response->collection(
-            $routes, 
+            $result, 
             new \App\Transformers\DriverRouteListTransformer, 
             [], 
             function($resource, $fractal){
@@ -59,16 +83,20 @@ class DriverRouteController extends Controller
         );
     }
 
-    public function fetch($id)
+    public function fetch($id, Request $request)
     {
+        $includes = 'driver';
+        if($request->input('includes') === 'accepted-requests'){
+            $includes.=',acceptedRequests';
+        }
         $driverRoute = DriverRoute::find($id);
         // dd($driverRoute);
         return $this->response->item(
             $driverRoute, 
             new \App\Transformers\DriverRouteDetailTransformer, 
             [], 
-            function($resource, $fractal){
-                $fractal->parseIncludes('driver');
+            function($resource, $fractal) USE ($includes){
+                $fractal->parseIncludes($includes);
             }
         );
     }
@@ -77,11 +105,7 @@ class DriverRouteController extends Controller
     {
         //check if user has active ride request
         $lastRequest = $this->auth->user()->rideRequests()->orderBy('created_at', 'DESC')->first();
-        //  return $this->response->array($lastRequest->toArray());
         if($lastRequest && $lastRequest->isActive()){
-            // return $this->response->array($lastRequest->toArray());
-            // dd($lastRequest->toArray());
-            // user has active ride request, send error
             return $this->response->errorBadRequest('Cannot perform action: You have an active ride request.');
         }
 
@@ -97,18 +121,15 @@ class DriverRouteController extends Controller
             );
         }
 
-
-        $pickup = explode(',', $request->input('pickup'));
-        $dropoff = explode(',', $request->input('dropoff'));
+        $location = explode(',', $request->input('coordinates'));
 
         // create ride rquests
         $rideRequest = new RideRequest([
             'driver_route_id' => $routeId,
             'commuter_id' => $this->auth->user()->id,
-            'pickup_latitude' => $pickup[0],
-            'pickup_longitude' => $pickup[1],
-            'dropoff_latitude' => $dropoff[0],
-            'dropoff_longitude' => $dropoff[1],
+            'location_latitude' => $location[0],
+            'location_longitude' => $location[1],
+            'location_address' => $request->input('formatted_address')
         ]);
         
 
@@ -129,27 +150,49 @@ class DriverRouteController extends Controller
 
     }
     
-    public function myRoutes()
+    public function myRoutes(Request $request)
     {
-        $postedRoutes = $this->auth->user()
-            ->postedRoutes()
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $postedRoutes = $this->auth->user()->postedRoutes();
 
-        return $this->response->collection($postedRoutes, new \App\Transformers\DriverRouteListTransformer);
+        if($request->type === 'ACTIVE'){
+            $postedRoutes->whereRaw('departure_datetime >= NOW()');
+        }else{
+            $postedRoutes->whereRaw('departure_datetime <= NOW()');
+        }
+        
+        $results = $postedRoutes->orderBy('created_at', 'DESC')->get();
+
+        return $this->response->collection($results, new \App\Transformers\DriverRouteListTransformer);
     }
 
-    public function getRequests($id)
+    public function getRequests($id, Request $request)
     {
-        // sleep(3);
-        $rideRequests = DriverRoute::find($id)->rideRequests()->get();
+        $rideRequests = RideRequest::where('driver_route_id', $id);
+        switch($request->input('type')){
+            case 'accepted': 
+                $rideRequests
+                    ->where('accepted', '=', 1)
+                    ->whereNull('cancelled_at');
+                break;
+            case 'rejected': 
+                 $rideRequests->where('rejected', '=', 1)
+                    ->whereNull('cancelled_at');
+                break;
+            case 'cancelled': 
+                 $rideRequests->whereNotNull('cancelled_at');
+                break;
+            default: 
+                 $rideRequests
+                    ->where('accepted', 0)
+                    ->where('rejected', 0)
+                    ->whereNull('cancelled_at');
+                break;
+        }
+
+        $result = $rideRequests->get();
         return $this->response->collection(
-            $rideRequests, 
-            new \App\Transformers\DriverRideRequestTransformer, 
-            [], 
-            function($resource, $fractal){
-                $fractal->parseIncludes('commuter');
-            }
+            $result, 
+            new \App\Transformers\DriverRideRequestTransformer
         );
     }
 
@@ -173,5 +216,90 @@ class DriverRouteController extends Controller
 
         return $this->response->noContent();
         
+    }
+
+
+    public function getRequest($id)
+    {
+
+        $request = RideRequest::find($id);
+
+        $route = DriverRoute::find($request->driver_route_id);
+        $route->done = $route->isDone();
+
+        $commuter = User::select('firstname', 'lastname', 'display_photo')->where('id', $request->commuter_id)->first();
+
+        return $this->response->array([
+            'data' => compact('request', 'route', 'commuter')
+        ]);
+    }
+
+    public function fetchAll($routeId)
+    {
+         $route = DriverRoute::find($routeId);
+         $route->done = $route->isDone();
+
+         $driver =  User::select('firstname', 'lastname', 'display_photo')->where('id', $route->created_by)->first();
+
+         $commuters = RideRequest::select('id', 'commuter_id', 'location_longitude', 'location_latitude', 'location_address', 'commuter_rating')
+            ->with(['commuter' => function($q){
+                $q->select('id', 'firstname', 'lastname', 'display_photo', 'role');
+            }])
+            ->where([
+                ['driver_route_id', '=', $route->id],
+                ['accepted', '=', 1]
+            ])
+            ->whereNull('cancelled_at')
+            ->get();
+
+        $commuters->each(function (&$item, $key){
+            $item->commuter->rating = $item->commuter->averageRating();
+        });
+
+        return $this->response->array([
+            'data' => compact('route', 'driver', 'commuters')
+        ]);
+         
+    }
+
+    public function saveRating($routeId, Request $request)
+    {
+
+        try{
+
+            $driverRoute = DriverRoute::findOrFail($routeId);
+
+            if(!(int)$driverRoute->isDone() || $driverRoute->ratings_done)
+                return $this->response->errorBadRequest('Cannot rate. Route is not yet finished or you already gave the commuters their respective ratigns!');
+
+        }catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e){
+            throw new \Dingo\Api\Exception\UpdateResourceFailedException('Could not set ratings ', ['Route does not exist.']);
+        }
+
+        $v = Validator::make($request->all(), [
+            'ratings.*.commuter_id' => [
+                'required_with:ratings.*.rating',  
+                Rule::exists('ride_requests')->where(function ($query)  USE($routeId) {
+                    $query->where('driver_route_id', $routeId)
+                        ->where('accepted', 1)
+                        ->whereNull('cancelled_at');
+                }),
+            ],
+            'ratings.*.rating' => 'required_with:ratings.*.commuter_id|in:1,2,3,4,5'
+        ]);
+
+        if ($v->fails()) throw new \Dingo\Api\Exception\UpdateResourceFailedException('Could not set save commuter ratings', $v->errors()->all());
+
+        DB::transaction(function () USE ($request, $routeId) {
+
+            foreach($request->ratings AS $r){
+                RideRequest::where('commuter_id', $r['commuter_id'])->update(['commuter_rating' => $r['rating']]);
+            }
+            DriverRoute::where('id', $routeId)->update(['ratings_done' => 1]);
+
+        }, 3);
+
+        return $this->response->noContent();
+
     }
 }

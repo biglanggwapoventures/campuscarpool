@@ -45,3 +45,5 @@ Vue.use(VueRouter);
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+
+require('jquery-confirm');
