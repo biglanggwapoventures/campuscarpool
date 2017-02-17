@@ -28,7 +28,7 @@
                         :num-seats="c.num_seats"
                         :requested-at="c.requested_at"
                         :status="c.status"
-                        v-on:open-chat="openChat({id: c.commuter_id, name: c.commuter.data.name})">
+                        v-on:open-chat="openChat({id: c.commuter_id, name: c.commuter.data.name, photo: c.commuter.data.display_photo_filename})">
                     </tr>
                 </tbody>
             </table>

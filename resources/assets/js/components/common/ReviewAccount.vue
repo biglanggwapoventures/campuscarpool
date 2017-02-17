@@ -44,7 +44,7 @@
                                         </div>
                                     </form>
                                     <div class="bs-callout bs-callout-success" v-show="!lacking">
-                                        You have already submitted all the requirements. Please wait for an email confirmation!.
+                                        You have already submitted all the requirements.
                                     </div>
                                 </div>
                                 <div v-show="rejected"  class="bs-callout bs-callout-danger">

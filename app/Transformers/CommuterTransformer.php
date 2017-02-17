@@ -24,7 +24,7 @@ class CommuterTransformer extends TransformerAbstract
            'id' => (int)$commuter->id,
            'name' => "{$commuter->firstname} {$commuter->lastname}",
            'rating' => rand(1, 5),
-           'display_photo_filename' => './../images/'.$this->dummyPhoto[rand(0, 7)]
+           'display_photo_filename' => asset($commuter->display_photo)
 	    ];
     }
 

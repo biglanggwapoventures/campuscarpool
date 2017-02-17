@@ -6,7 +6,8 @@
                     <message 
                         v-for="m in onScreenMessages" 
                         :message="m.message" 
-                        :name="m.sender_id === recipient.id ?  recipient.name : 'You'">
+                        :name="m.sender_id === recipient.id ?  recipient.name : 'You'"
+                        :photo="m.sender_id === recipient.id ?  recipient.photo : $auth.user().display_photo">
                     </message>
                 </div>
                 <div class="modal-footer p-0" style="border-top: none">
