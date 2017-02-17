@@ -23,7 +23,7 @@ class DriverTransformer extends TransformerAbstract
         return [
            'id' => (int)$driver->id,
            'name' => "{$driver->firstname} {$driver->lastname}",
-           'rating' => rand(1, 5),
+           'rating' => $driver->averageRating(),
            'display_photo_filename' => asset($driver->display_photo),
            'vehicle' => "{$driver->profile->vehicle_model} [{$driver->profile->vehicle_plate_number}]"
 	    ];

@@ -22,7 +22,6 @@
                 <router-link v-bind:class="{'active' : $route.name === 'browse-routes'}"  :to="{name: 'browse-routes'}" class="list-group-item list-group-item-action">Browse Routes</router-link>
                 <router-link active-class="active" :to="{name: 'commuter-requests'}" class="list-group-item list-group-item-action">
                     My Requests 
-                    <span class="badge float-xs-right"><i class="fa fa-exclamation"></i> 3</span>
                 </router-link>
                 <router-link active-class="active" :to="{name: 'profile-basic-information'}" class="list-group-item list-group-item-action">Profile</router-link>
             </ul>

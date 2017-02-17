@@ -19,7 +19,8 @@
             :vehicle="v.driver.data.vehicle"
             :space-occupied="v.num_seats_taken"
             :space-max="v.num_seats_max"
-            :departure-time="v.departure_datetime">
+            :departure-time="v.departure_datetime"
+            :rating="v.driver.data.rating">
         </driver-route>
     </div>
 </template>

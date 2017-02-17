@@ -157,5 +157,10 @@ class User extends Authenticatable
         return $result ? $result->avg_rating : 0;
 
     }
+
+    public function getDisplayPhotoAttribute($value)
+    {
+        return $value ?: asset('images/default.png');
+    }
     
 }

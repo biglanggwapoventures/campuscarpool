@@ -8,9 +8,6 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="responsiveNavbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ $auth.user().firstname }}</a>
                     <div class="dropdown-menu" aria-labelledby="responsiveNavbarDropdown">
-                        <a class="dropdown-item" @click="openAlert()">Profile</a>
-                        <a class="dropdown-item" href="#">Settings</a>
-                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" @click="$auth.logout()">Logout</a>
                     </div>  
                 </li>

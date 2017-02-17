@@ -9,13 +9,14 @@
                         </a>
                         <div class="media-body">
                             <h5 class="media-heading card-title">{{ driverName }}</h5>
-                            <p class="card-text mb-0">
-                                <i class="fa fa-star text-warning"></i>
-                                <i class="fa fa-star text-warning"></i>
-                                <i class="fa fa-star text-warning"></i>
-                                <i class="fa fa-star text-warning"></i>
-                                <i class="fa fa-star-o"></i>
-                            </p>
+                             <div class="row">
+                                 <div class="col-md-3">
+                                      <p class="card-text mb-0">
+                                            <star-rating :show-rating="false" :star-size="15" :rating="rating" :read-only="true" :increment="0.01"> </star-rating>
+                                        </p>
+                                 </div>
+                             </div>
+                           
                             <!--<span >Capacity: <strong class="text-success"></strong></span>-->
                             <!--<small class="text-muted">{{ timePosted }}</small>-->
                         </div>
@@ -107,7 +108,8 @@
             'departure-time': {
                 type: String,
                 default: 'Dec 2, 2016 @ 4:30PM',
-            }
+            },
+            rating: Number
         },
         methods: {
             viewRoute(){
@@ -119,6 +121,9 @@
             full(){
                 return this.spaceOccupied == this.spaceMax;
             }
+        },
+        components: {
+            'star-rating': require('vue-star-rating')
         }
     }
 </script>

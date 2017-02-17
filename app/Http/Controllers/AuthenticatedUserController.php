@@ -73,7 +73,8 @@ class AuthenticatedUserController extends Controller
         ]);
 
         if($request->hasFile('display_photo')){
-            $updates['display_photo'] = $request->file('display_photo')->store("display_photos/{$userId}", 'public');
+            $displayPhotoFilename = $request->file('display_photo')->store("display_photos/{$userId}", 'public');
+            $updates['display_photo'] = "storage/{$displayPhotoFilename}";
         }
 
         User::find($userId)
