@@ -13,7 +13,7 @@
                 </p>
             </div>
             <div class="list-group list-group-flush">
-                <router-link class="list-group-item list-group-item-action" active-class="active" :to="{'name' : 'admin.users'}">Manage Users</router-link>
+                <router-link class="list-group-item list-group-item-action" v-bind:class="{'active' : $route.name === 'admin.users'}" :to="{'name' : 'admin.users'}">Manage Users</router-link>
                 <router-link class="list-group-item list-group-item-action" active-class="active" :to="{'name' : 'admin.reports'}">Reports</router-link>
             </div>
         </div>
