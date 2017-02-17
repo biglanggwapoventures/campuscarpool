@@ -43,6 +43,8 @@ class LoginController extends Controller
             throw new \Dingo\Api\Exception\StoreResourceFailedException('Validation errors..', ['id_number' => ['Your account has been banned! You are no longer be able to login!']]);
         }
 
+        $user->display_photo = asset($user->display_photo);
+
         // all good so return the token
         return $this->response->array([
             'user' => $user,
