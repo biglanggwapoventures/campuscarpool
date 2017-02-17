@@ -8,13 +8,18 @@
         <div class="form-group">
             <datepicker v-model="datetime"></datepicker>
         </div>
-        <button type="submit" class="btn btn-success">Search</button>
+        <button type="submit" class="btn btn-success" v-bind:disabled="loading"><i class="fa fa-spinner fa-spin" v-show="loading"></i> Search</button>
     </form>
 </template>
 <script>
     export default {
         mounted() {
+            // console.log('SearchRide component mounted.')
             this.searchRoutes();
+            this.$parent.$on('search-routes-finished', () => {
+                // console.log('event:search-routes-finished triggered')
+                this.loading = false;
+            })
         },
         components: {
             'datepicker': require('./DateTimePicker.vue'),
@@ -24,10 +29,12 @@
             return {
                 type:'HOME',
                 datetime: Date.now(),
+                loading: false
             }
         },
         methods: {
             searchRoutes(){
+                this.loading = true;
                 this.$emit('search-routes', {
                     type: this.type,
                     datetime: this.datetime

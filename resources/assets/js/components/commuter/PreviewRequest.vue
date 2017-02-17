@@ -7,14 +7,13 @@
                     <div v-show="!loading">
                         <img :src="driver.display_photo"  class="rounded mx-auto d-block rounded-circle img-fluid img-thumbnail" alt="..." style="height:128px;width:128px;">
                         <h4 class="card-title mb-0 text-xs-center">{{ `${driver.firstname} ${driver.lastname}` }}</h4>
-                        <p class="card-text text-xs-center mb-0">
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                        </p>
-                       
+                        <div class="row">
+                             <div class="col-sm-6 offset-md-3">
+                                <p class="card-text text-xs-center">
+                                    <star-rating :show-rating="false" :star-size="15" :rating="driver.rating" :read-only="true" :increment="0.01"> </star-rating>
+                                </p>
+                            </div>
+                        </div>
 
                         <p class="text-success text-xs-center" v-if="request.accepted"><i class="fa fa-check-circle"></i> Accepted</p> 
                         <p class="text-danger text-xs-center" v-else-if="request.rejected"><i class="fa fa-times"></i> Rejected</p>
@@ -41,6 +40,11 @@
                                 <div v-else>
                                     <div v-if="route.done">
                                         <rating :ride-request-id="id" :default-rating="request.driver_rating"></rating>
+                                         <hr>
+                                         <div  class="text-danger text-xs-center">
+                                            <span v-if="report"><i class="fa fa-thumbs-down"></i> You have reported this driver!</span>
+                                            <a @click="showReportModal"  v-else  class=" text-danger"><i class="fa fa-thumbs-down"></i> Report this driver</a> 
+                                        </div>
                                     </div>
                                     <div v-else  class="text-xs-center">
                                         <transition>
@@ -75,6 +79,29 @@
                 </ccmap>
             </div>
         </div>
+        <!-- REPORT -->
+        <div class="modal fade" id="report" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+
+                     <form v-on:submit.prevent="submitReport">
+                        <div class="modal-body">
+                        
+                            <div class="form-group mb-0">
+                                <label for="">Enter your message</label>
+                                <textarea name="" id="" class="form-control" v-model="message"></textarea>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -84,6 +111,7 @@
             'back': require('./../BackTo.vue'),
             'ccmap': require('./../map/Map.vue'),
             'rating': require('./../RateDriver.vue'),
+            'star-rating': require('vue-star-rating')
         },
         created(){
             this.loading = true;
@@ -94,6 +122,7 @@
                 route: {},
                 request: {},
                 driver: {},
+                report: {},
                 id :null,
                 google : null,
                 map : null,
@@ -104,7 +133,8 @@
                 },
                 loading: false,
                 errorMessage: null ,
-                cancelRequest: false
+                cancelRequest: false,
+                message: null
             }
         },
         methods: {
@@ -141,6 +171,7 @@
                         this.route = res.body.data.route;
                         this.driver = res.body.data.driver;
                         this.request = res.body.data.request;
+                        this.report = res.body.data.report;
                         this.previewRoute();
                         this.loading = false;
                     }, (err) => {
@@ -159,6 +190,25 @@
                 }, (err) => {
                     this.errorMessage = err.body.message;
                     this.loading = false;
+                })
+            },
+            showReportModal() {
+                $('#report').modal('show');
+            },
+            closeReportModal() {
+                $('#report').modal('hide');
+            },
+            submitReport() {
+                this.$http.post('report', {
+                    recipient_id: this.route.created_by,
+                    message: this.message,
+                    driver_route_id: this.route.id
+                }).then((res) => {
+                    this.report = true
+                    this.closeReportModal()
+                    
+                }, (err) => {
+                    window.alert('An internal server error has occured!');
                 })
             }
         },

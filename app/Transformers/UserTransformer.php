@@ -18,11 +18,16 @@ class UserTransformer extends TransformerAbstract
             $code = 2;
             $statusText = 'Rejected';
             $actionDate =  $user->rejected_at->format('m/d/Y h:i A');
-        }elseif($user->approved_at){
+        }elseif($user->approved_at && !$user->banned_at){
             $code = 1;
             $statusText = 'Approved';
             $actionDate =  $user->approved_at->format('m/d/Y h:i A');
-        }else{
+        }elseif($user->approved_at && $user->banned_at){
+            $code = 3;
+            $statusText = 'Banned';
+            $actionDate =  $user->banned_at->format('m/d/Y h:i A');
+        }
+        else{
             $code = 0;
             $statusText = 'Pending';
         }
@@ -35,7 +40,7 @@ class UserTransformer extends TransformerAbstract
 
         if($user->isDriver()){
             $requirements  +=  [
-               'drivers_license' => asset($user->profile->drivers_license),
+               'drivers_license' => asset($user->profile->drivers_license_filename),
                'vehicle_model' => $user->profile->vehicle_model,
                'plate_number' => $user->profile->vehicle_plate_number,
             ];
@@ -53,6 +58,8 @@ class UserTransformer extends TransformerAbstract
             ],
             'id_number' => $user->id_number,
             'requirements' => $requirements,
+            'reports' => $user->receivedReports ?: [],
+            'banned' => (bool)$user->banned_at,
             'joined_at' => $user->created_at->format('m/d/Y h:i A'),
             'status' => $status
 	    ];

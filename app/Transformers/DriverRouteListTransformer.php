@@ -26,6 +26,7 @@ class DriverRouteListTransformer extends TransformerAbstract
 	{
         $routeFrom = $driverRoute->type === 'CAMPUS' ? $driverRoute->place_formatted_address : 'USC - TC';
         $routeTo = $driverRoute->type === 'CAMPUS' ? 'USC - TC' : $driverRoute->place_formatted_address;
+
 	    return [
            'id' => (int)$driverRoute->id,
            'type' => $driverRoute->type,
@@ -35,6 +36,7 @@ class DriverRouteListTransformer extends TransformerAbstract
            'num_seats_taken' =>  $driverRoute->numSeatsTaken(),
            'departure_datetime' => $driverRoute->departure_datetime->format('M d, Y h:i A'),
            'posted_at' => $driverRoute->created_at->format('M d, Y h:i A'),
+           'rating' => $driverRoute->acceptedRequests()->avg('driver_rating')
 	    ];
 	}
 

@@ -10,7 +10,11 @@
                 <dd>{{ routeTo }}</dd>
             </dl>
         </td>
-        <td>N/A</td>
+        <td>
+            <div v-if="commuterRating > 0" class="text-success">
+                {{ commuterRating }}
+            </div>
+        </td>
         <td v-bind:class="status ? 'text-success' : 'text-danger'"> {{ status ? 'Finished' : 'Waiting' }}</td>
         <td>
             <a href="javascript:void(0)" class="btn btn-sm btn-secondary" @click="openChat"><i class="fa fa-fw fa-envelope"></i></a>
@@ -30,6 +34,8 @@
             'destination': String,
             'route-from': String,
             'route-to': String,
+            'commuter-rating': Number,
+            'driver-rating': Number,
         },
         mounted() {
             

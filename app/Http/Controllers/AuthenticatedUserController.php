@@ -12,8 +12,10 @@ class AuthenticatedUserController extends Controller
 {
     public function getDetails()
     {
+        $user = $this->auth->user();
+        $user->rating = $user->averageRating();
         return $this->response->array([
-            'data' =>  $this->auth->user()
+            'data' =>  $user
         ]);
     }
 
@@ -102,5 +104,18 @@ class AuthenticatedUserController extends Controller
             ->save();
 
         return $this->response->noContent();
+    }
+
+    public function getStatus()
+    {
+        $user = $this->auth->user();
+        $lacking = (!$user->school_id_filename) || ($user->isDriver() && !$user->profile()->exists());
+       
+        return $this->response->array([
+            'data' => [
+                'lacking' => $lacking ,
+                'rejected' => $user->rejected_at
+            ]
+        ]);
     }
 }

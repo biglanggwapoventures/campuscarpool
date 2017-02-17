@@ -28,13 +28,18 @@
                     <div class="media" v-for="(c, i) in commuters" style="margin-top:10px;">
                         <a class="media-left" @click="zoom(i)">
                             <img class="media-object" style="height:50px;width:50px;" :src="c.commuter.display_photo">
+                            
                         </a>
                         <div class="media-body"  style="line-height:1">
                             <h5 class="media-heading mb-0">{{ `${c.commuter.firstname} ${c.commuter.lastname}` }}</h5>
                             <small>{{ c.location_address }}</small>
                             <div class="row" style="margin-top:5px;">
                                 <div class="col-sm-5">
-                                    <star-rating :show-rating="false" :star-size="15" :rating="c.commuter.rating" :read-only="true"> </star-rating>
+                                    <star-rating :show-rating="false" :star-size="15" :rating="c.commuter.rating" :read-only="true" :increment="0.01"> </star-rating>
+                                </div>
+                                <div class="col-sm-7 text-danger" v-if="route.done">
+                                    <a  @click="showReportModal(i)" v-if="!c.commuter.reported"><small> <i class="fa fa-thumbs-down"></i> Report</small></a>
+                                    <span v-else> <small><i class="fa fa-thumbs-down"></i> You have reported this commuter!</span></small>
                                 </div>
                             </div>
                         </div>
@@ -48,6 +53,29 @@
                 </ccmap>
             </div>
         </div>
+        <!-- REPORT -->
+        <div class="modal fade" id="report" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                     <form v-on:submit.prevent="submitReport">
+                        <div class="modal-body">
+                        
+                            <div class="form-group mb-0">
+                                <label for="">Enter your message</label>
+                                <textarea name="" id="" class="form-control" v-model="message"></textarea>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+         <!-- RATING -->
         <div class="modal fade" id="rate-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
@@ -116,7 +144,8 @@
                 rateRequestDone: false,
                 rateRequestMessage: false,
                 rateRequestLoading: false,
-                rateRequestErrors: false
+                rateRequestErrors: false,
+                reportIndex: null
             }
         },
         methods: {
@@ -186,6 +215,28 @@
                         this.rateRequestLoading = false;
                         this.rateRequestErrors = err.body.message;
                     })
+            },
+            showReportModal(index) {
+                this.reportIndex =  index;
+                // this.reported = this.commuters[index].commuter_id;
+                $('#report').modal('show');
+            },
+            closeReportModal() {
+                $('#report').modal('hide');
+            },
+            submitReport() {
+                this.$http.post('report', {
+                    recipient_id: this.commuters[this.reportIndex].commuter_id,
+                    message: this.message,
+                    driver_route_id: this.route.id
+                }).then((res) => {
+                    this.$set(this.commuters[this.reportIndex].commuter, 'reported', true);
+                     console.log(this.commuters[this.reportIndex].commuter)
+                    this.closeReportModal()
+                    
+                }, (err) => {
+                    window.alert('An internal server error has occured!');
+                })
             }
         },
         computed: {

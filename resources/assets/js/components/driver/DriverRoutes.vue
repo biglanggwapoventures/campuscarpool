@@ -21,7 +21,7 @@
                 <dt class="col-sm-2">Passengers</dt>
                 <dd class="col-sm-10">{{ r.num_seats_taken }} / {{ r.num_seats_max }}</dd>
                 <dt class="col-sm-2">Rating</dt>
-                <dd class="col-sm-10"><i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i></dd>
+                <dd class="col-sm-1"><star-rating :show-rating="false" :star-size="15" :rating="r.rating" :read-only="true" :increment="0.01"> </star-rating></dd>
             </dl>
             <div class="row">
                 <div class="col-xs-12 clearfix">
@@ -31,24 +31,22 @@
                             <i class="fa fa-circle fa-stack-2x"></i>
                             <i class="fa fa-users fa-stack-1x fa-inverse"></i>
                         </span>
+                        Requests
                     </router-link>
                     <router-link :to="{name : 'preview-route-all', params: { id: r.id }}" class="text-warning">
                         <span class="fa-stack fa-lg">
                             <i class="fa fa-circle fa-stack-2x"></i>
                             <i class="fa fa-map-signs fa-stack-1x fa-inverse"></i>
                         </span>
+                        Passengers
+                        
                     </router-link>
-                    <a href="javascript:void(0)" class="text-info">
-                         <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
                     <a href="javascript:void(0)" class="text-danger float-xs-right">
                         <span class="fa-stack fa-lg">
                             <i class="fa fa-circle fa-stack-2x"></i>
                             <i class="fa fa-trash fa-stack-1x fa-inverse"></i>
                         </span>
+                        Trash
                     </a>
                 </div>
             </div>
@@ -59,7 +57,8 @@
 <script>
     export default {
         components: {
-            'ccselect' : require('./../Select.vue')
+            'ccselect' : require('./../Select.vue'),
+            'star-rating': require('vue-star-rating')
         },
         mounted() {
             this.getData();

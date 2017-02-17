@@ -30,6 +30,8 @@
                     :route-from="r.route_from"
                     :route-to="r.route_to"
                     :status="r.finished"
+                    :commuter-rating="r.commuter_to_driver_rating"
+                    :driver-rating="r.driver_to_commuter_rating"
                     v-on:open-chat="openChat({id: r.driver_id, name: r.driver})">
                 </tr>
             </tbody>

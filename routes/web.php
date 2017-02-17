@@ -18,6 +18,8 @@ $api->group(['namespace' => 'App\Http\Controllers'], function ($api) {
                 $api->get('refresh', 'RefreshTokenController');
                 $api->get('user', 'AuthenticatedUserController@getDetails');
 
+                $api->get('lacking-requirements', 'AuthenticatedUserController@getStatus');
+
                 $api->post('update-basic-information', 'AuthenticatedUserController@updateBasicInformation');
                 $api->post('change-password', 'AuthenticatedUserController@changePassword');
             });
@@ -26,11 +28,15 @@ $api->group(['namespace' => 'App\Http\Controllers'], function ($api) {
 
         $api->group(['middleware' => 'api.auth'], function($api){
 
+            $api->post('report', 'ReportController@store');
+
             $api->group(['prefix' => 'admin'], function($api){
                 $api->get('users', 'AdminController@users');
+                $api->get('reports', 'AdminController@reports');
                 $api->get('user/{id}', 'AdminController@fetchUser');
                 $api->patch('user/{id}', 'AdminController@moderateUser');
             });
+            
 
             $api->group(['prefix' => 'ride-requests'], function($api){
 

@@ -4,7 +4,7 @@
         <p v-else class="font-weight-bold">Your rated this carpool</p>
         <star-rating :show-rating="false" :star-size="40" @rating-selected="rate" :read-only="done" :rating="defaultRate">
         </star-rating>
-        <button v-show="!done && !defaultRate" type="button" class="btn btn-success mt-1" @click="submit" v-bind:disabled="loading"><i v-show="loading" class="fa fa-spinner fa-spin"></i> Submit</button>
+        <button v-show="!done && !defaultRate" type="button" class="btn btn-success mt-1" @click="submit" v-bind:disabled="loading || !rating"><i v-show="loading" class="fa fa-spinner fa-spin"></i> Submit</button>
         <div class="bs-callout bs-callout-success mt-1" v-show="done">Thank you for your feedback!</div>
     </div>
 </template>

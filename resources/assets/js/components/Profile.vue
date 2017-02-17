@@ -11,9 +11,6 @@
                             <li class="nav-item">
                                 <router-link class="nav-link" active-class="active" :to="{name: 'profile-change-password'}">Change Password</router-link>
                             </li>
-                            <li class="nav-item">
-                                <router-link class="nav-link" active-class="active" :to="{name: 'profile-requirements'}">Requirements</router-link>
-                            </li>
                         </ul>
                     </div>
                     <div class="col-sm-8">

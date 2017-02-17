@@ -56,7 +56,7 @@ class DriverRouteController extends Controller
 
         $routes = DriverRoute::active();
         if(in_array($request->input('type'), ['CAMPUS','HOME'])){
-            $routes->where('type', '=', $request->input('type'));
+            $routes->where('type', trim($request->input('type')));
         }
 
         $v = Validator::make($request->all(), [
@@ -64,6 +64,7 @@ class DriverRouteController extends Controller
         ]);
 
         if(!$v->fails()){
+            // dd(($request->input('type')));
             if(trim($request->datetime)){
                  $routes->where('departure_datetime', '>=', $request->input('datetime'))
                     ->whereRaw("DATE(departure_datetime) = DATE('{$request->input('datetime')}')");;
@@ -227,7 +228,9 @@ class DriverRouteController extends Controller
         $route = DriverRoute::find($request->driver_route_id);
         $route->done = $route->isDone();
 
-        $commuter = User::select('firstname', 'lastname', 'display_photo')->where('id', $request->commuter_id)->first();
+        $commuter = User::select('firstname', 'lastname', 'display_photo', 'role', 'id')->where('id', $request->commuter_id)->first();
+        // dd();
+        $commuter->rating = $commuter->averageRating();
 
         return $this->response->array([
             'data' => compact('request', 'route', 'commuter')
@@ -252,8 +255,9 @@ class DriverRouteController extends Controller
             ->whereNull('cancelled_at')
             ->get();
 
-        $commuters->each(function (&$item, $key){
+        $commuters->each(function (&$item, $key) USE ($routeId){
             $item->commuter->rating = $item->commuter->averageRating();
+            $item->commuter->reported = $item->commuter->isReported($routeId);
         });
 
         return $this->response->array([

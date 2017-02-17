@@ -8,12 +8,11 @@
 <script>
     export default {
         mounted(){
-            console.log(this.value)
             this.Flatpickr = require('flatpickr');
             new this.Flatpickr(document.getElementById(this.id), {
-                enableTime: true,
+                enableTime: this.enableTime,
                 altInput: true,
-                altFormat: "m/j/Y h:i K",
+                altFormat: this.enableTime ? "m/j/Y h:i K" :"m/j/Y" ,
                 minuteIncrement: 1,
                 defaultDate: this.value, 
                 minDate: this.value,
@@ -31,6 +30,10 @@
             }
         },
         props: {
+            'enable-time' : {
+                type:Boolean,
+                default: true
+            },
             id: {
                 type: String,
                 default: 'datetimepicker'

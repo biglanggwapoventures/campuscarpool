@@ -56,20 +56,23 @@
                         this.auth.password = '';
                     },
                     success(res){
-                        switch(res.body.user.role){
-                            case 'DRIVER': 
-                                this.$router.replace({'name' : 'driver-routes'});
-                                
-                                break;
-                                
-                            case 'COMMUTER':
-                                this.$router.replace({'name' : 'browse-routes'})
-                                 break;
-
-                            case 'ADMIN': 
-                                this.$router.replace({'name' : 'admin.users'})
-                                break;
+                        let user = res.body.user;
+                        if(!user.approved_at){
+                            this.$router.replace({'name' : 'review-account'});
+                        }else{
+                            switch(user.role){
+                                case 'DRIVER': 
+                                    this.$router.replace({'name' : 'driver-routes'});
+                                    break;
+                                case 'COMMUTER':
+                                    this.$router.replace({'name' : 'browse-routes'})
+                                    break;
+                                case 'ADMIN': 
+                                    this.$router.replace({'name' : 'admin.users'})
+                                    break;
+                            }
                         }
+                        
                     }
                 });
             }

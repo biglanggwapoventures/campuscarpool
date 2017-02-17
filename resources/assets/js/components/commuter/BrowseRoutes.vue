@@ -4,7 +4,11 @@
         <div class="card card-block text-xs-center p-1">
             <search-ride v-on:search-routes="getDriverRoutes"></search-ride>
         </div>
-        <div class="bs-callout bs-callout-success">We found <strong class="text-success font-weight-bold">{{ routeFeed.length }} results</strong> from your search criteria!</div>
+        <div v-show="!loading">
+            <div class="bs-callout bs-callout-success" v-if="routeFeed.length">We found <strong class="text-success font-weight-bold">{{ routeFeed.length }} matches!</strong></div>
+            <div class="bs-callout bs-callout-success" v-else>No routes available!</div>
+        </div>
+        
         <driver-route  v-for="v in routeFeed"
             :route-id="v.id"
             :profile-photo-url="v.driver.data.display_photo_filename"
@@ -17,11 +21,6 @@
             :space-max="v.num_seats_max"
             :departure-time="v.departure_datetime">
         </driver-route>
-       <div class="row">
-           <div class="col-sm-6" >
-                
-           </div>
-       </div>
     </div>
 </template>
 
@@ -35,19 +34,23 @@
         },
         methods: {
             getDriverRoutes(params){
+                this.loading = true;
                 this.$http.get('driver-routes', {
                     params: params
                 }).then((response) => {
                     this.routeFeed = response.body.data
+                    this.$emit('search-routes-finished');
+                    this.loading = false;
                 }, () => {
-                    
+                    this.loading = true;
                 })
             }
         },
         data () {
             return {
                 googleplay: 'https://www.wunder.org/images/googleplay.png',
-                routeFeed: []
+                routeFeed: [],
+                loading: false
             }
         }
     }

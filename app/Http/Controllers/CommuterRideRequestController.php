@@ -68,12 +68,20 @@ class CommuterRideRequestController extends Controller
             $request = RideRequest::find($id);
 
             $route = DriverRoute::find($request->driver_route_id);
+            $route->num_seats_taken = $route->numSeatsTaken();
             $route->done = $route->isDone();
             
-            $driver = User::select('firstname', 'lastname', 'display_photo')->where('id', $route->created_by)->first();
+            
+            $driver = User::select('firstname', 'lastname', 'display_photo', 'id', 'role')->where('id', $route->created_by)->first();
+            $profile = \App\DriverProfile::where('user_id',  $route->created_by)->first();
+            $driver->vehicle = "{$profile->vehicle_model} [{$profile->vehicle_plate_number}]";
+            $driver->display_photo = asset($driver->display_photo);
+            $driver->rating = $driver->averageRating();
+
+            $report = \App\Report::whereDriverRouteId($route->id)->whereSenderId($this->auth->user()->id)->first();
 
             return $this->response->array([
-                'data' => compact('request', 'route', 'driver')
+                'data' => compact('request', 'route', 'driver', 'report')
             ]);
         }catch(Illuminate\Database\Eloquent\ModelNotFoundException $e){
             return $this->response->errorNotFound();

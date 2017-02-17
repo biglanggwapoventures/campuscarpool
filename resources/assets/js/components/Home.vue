@@ -21,17 +21,27 @@
             'user-card' : require('./UserCard.vue'),
             'user-navbar' : require('./UserNavbar.vue')
         },
-        mounted() {
-            // switch(this.$auth.user().role){
-            //     case 'COMMUTER':
-            //         this.$router.replace({name: 'commuter-index'});
-            //         break;
-            //     case 'DRIVER':
-            //         this.$router.replace({name: 'driver-index'});
-            //         break;
-            //     default:
-            //         break;
-            // }
+        beforeRouteEnter (to, from, next) {
+            next(vm => {
+                if(!vm.$auth.user().approved_at){
+                    vm.$router.replace({name: 'review-account'});
+                }
+            })
+        },
+        created() {
+            switch(this.$auth.user().role){
+                case 'COMMUTER':
+                    this.$router.replace({name: 'browse-routes'});
+                    break;
+                case 'DRIVER':
+                    this.$router.replace({name: 'driver-routes'});
+                    break;
+                case 'ADMIN':
+                    this.$router.replace({name: 'admin.users'});
+                    break;
+                default:
+                    break;
+            }
             
         }
     }

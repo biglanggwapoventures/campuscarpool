@@ -14,9 +14,7 @@
             </div>
             <div class="list-group list-group-flush">
                 <router-link class="list-group-item list-group-item-action" active-class="active" :to="{'name' : 'admin.users'}">Manage Users</router-link>
-                <a href="#" class="list-group-item list-group-item-action">
-                    View Reports
-                </a>
+                <router-link class="list-group-item list-group-item-action" active-class="active" :to="{'name' : 'admin.reports'}">Reports</router-link>
             </div>
         </div>
     </div>

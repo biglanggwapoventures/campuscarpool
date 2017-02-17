@@ -14,7 +14,7 @@ class RegisterController extends Controller
     {
 
         $v = Validator::make($request->all(), [
-            // 'display_photo' => 'required|image|max:2048',
+            'display_photo' => 'image|max:2048',
             'role' => 'required|in:DRIVER,COMMUTER',
             'firstname' => 'required|max:255',
             'lastname' => 'required|max:255',
@@ -40,8 +40,11 @@ class RegisterController extends Controller
         $user = User::create($data);
 
         if($user->id){
-            // $user->display_photo = $request->file('display_photo')->store("display_photos/{$user->id}", 'public');
-            // $user->save();
+            if($request->hasFile('display_photo')){
+                 $displayPhotoPath = $request->file('display_photo')->store("display_photos/{$user->id}", 'public');
+                 $user->display_photo = "storage/{$displayPhotoPath}";
+                 $user->save();
+            }
 
             return $this->response->array([
                 'user' => $user,

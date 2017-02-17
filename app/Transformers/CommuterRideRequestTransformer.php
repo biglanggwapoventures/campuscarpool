@@ -27,9 +27,13 @@ class CommuterRideRequestTransformer extends TransformerAbstract
            'route_to' => $driverRoute->type === 'CAMPUS' ? 'USC - TC' : $driverRoute->place_formatted_address,
            'departure' => $driverRoute->departure_datetime->format('m/d/Y h:i A'),
            'driver' => $driverRoute->driver->fullname(),
+           'driver_photo' => asset("storage/{$driverRoute->driver->display_photo}"),
            'driver_id' => $driverRoute->driver->id,
            'requested_at' => $rideRequest->created_at->format('M d, Y h:i A'),
-           'finished' =>  $driverRoute->departure_datetime->lt(Carbon::now())
+           'finished' =>  $driverRoute->departure_datetime->lt(Carbon::now()),
+           'commuter_to_driver_rating' => $rideRequest->driver_rating,
+           'driver_to_commuter_rating' => $rideRequest->commuter_rating
+           
 	    ];
     }
 

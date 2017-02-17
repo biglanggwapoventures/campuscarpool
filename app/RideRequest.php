@@ -47,7 +47,7 @@ class RideRequest extends Model
 
     public function isActive()
     {
-        if($this->rejected) return false;
+        if($this->rejected || $this->cancelled_at) return false;
         return $this->driverRoute->departure_datetime->isFuture();
     }
 

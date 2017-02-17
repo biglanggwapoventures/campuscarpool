@@ -33,7 +33,8 @@ class User extends Authenticatable
         'approved_at',
         'rejected_at',
         'created_at',
-        'deleted_at'
+        'deleted_at',
+        'banned_at'
     ];
 
 
@@ -65,6 +66,21 @@ class User extends Authenticatable
     public function messages()
     {
         return $this->hasMany('App\Message', 'sender_id');
+    }
+
+    public function reports()
+    {
+        return $this->hasMany('App\Report', 'sender_id');
+    }
+
+    public function receivedReports()
+    {
+        return $this->hasMany('App\Report', 'recipient_id');
+    }
+
+    public function isReported($driverRouteId)
+    {
+        return $this->receivedReports()->whereDriverRouteId($driverRouteId)->exists();
     }
 
     public function conversationWith($userId, $lastMessageId = false)
@@ -125,7 +141,21 @@ class User extends Authenticatable
                 ->first();
             return $result ? $result->avg_rating : 0;
        }
-       
+
+       $result = \DB::table('ride_requests')
+            ->select(DB::raw('COUNT(ride_requests.id) AS num_ratings, AVG(ride_requests.driver_rating) AS avg_rating'))
+            ->join('driver_routes', 'driver_routes.id', '=', 'ride_requests.driver_route_id')
+            ->where('driver_routes.created_by', $this->id)
+            ->whereNull('cancelled_at')
+            ->where([
+                ['ride_requests.accepted', '=', 1],
+                ['ride_requests.driver_rating', '>', 0]
+            ])
+            ->groupBy('driver_routes.created_by')
+            ->having('num_ratings', '>=', 3)
+            ->first();
+        return $result ? $result->avg_rating : 0;
+
     }
     
 }

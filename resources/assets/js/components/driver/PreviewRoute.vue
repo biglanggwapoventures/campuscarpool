@@ -7,13 +7,13 @@
                     <div v-show="!loading">
                         <img :src="commuter.display_photo" class="rounded mx-auto d-block rounded-circle img-fluid img-thumbnail" alt="..." style="height:128px;width:128px;">
                         <h4 class="card-title mb-0">{{ `${commuter.firstname} ${commuter.lastname}`  }}</h4>
-                        <p class="card-text text-xs-center">
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                            <i class="fa fa-star text-warning"></i>
-                        </p>
+                        <div class="row">
+                            <div class="col-sm-6 offset-md-3">
+                                <p class="card-text text-xs-center">
+                                    <star-rating :show-rating="false" :star-size="15" :rating="commuter.rating" :read-only="true" :increment="0.01"> </star-rating>
+                                </p>
+                            </div>
+                        </div>
                         <div v-if="request.cancelled_at != null">
                             <p class="text-xs-center text-danger">Commuter has cancelled his/her request.</p>
                         </div>
@@ -63,6 +63,7 @@
         components: {
             'back': require('./../BackTo.vue'),
             'ccmap': require('./../map/Map.vue'),
+            'star-rating': require('vue-star-rating')
         },
         created(){
             this.loading = true;
