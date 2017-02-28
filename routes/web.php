@@ -4,7 +4,7 @@ $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', function ($api) {
 
-$api->group(['namespace' => 'App\Http\Controllers'], function ($api) {
+    $api->group(['namespace' => 'App\Http\Controllers'], function ($api) {
 
         // Authentication and Registration related endpoints
         $api->group(['prefix' => 'auth'], function($api){
@@ -47,6 +47,7 @@ $api->group(['namespace' => 'App\Http\Controllers'], function ($api) {
                 });
 
                 $api->group(['prefix' => 'commuter'], function($api){
+                    // get all reide request with params
                     $api->get('/', 'CommuterRideRequestController@all');
                     $api->get('/active', 'CommuterRideRequestController@active');
                     $api->get('{id}', 'CommuterRideRequestController@fetch');

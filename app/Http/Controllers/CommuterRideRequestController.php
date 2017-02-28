@@ -33,7 +33,10 @@ class CommuterRideRequestController extends Controller
                  $rideRequests
                     ->whereNull('cancelled_at')
                     ->where('accepted', 0)
-                    ->where('rejected', 0);
+                    ->where('rejected', 0)
+                    ->whereHas('driverRoute', function ($query) {
+                        $query->whereRaw('departure_datetime >= NOW()');
+                    });
                 break;
         }
 
