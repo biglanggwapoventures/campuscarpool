@@ -61,6 +61,18 @@ class RideRequest extends Model
         return $this->orderBy('created_at', 'DESC');
     }
 
+     public function scopeActive($query)
+    {
+        return $query
+            ->where('rejected', 0)
+            ->whereNull('cancelled_at');
+    }
+
+    public function scopeCurrentDay($query)
+    {
+        return $query->whereRaw('DATE(created_at) = CURDATE()');
+    }
+
     public function getStatus()
     {
         if($this->accepted) return 'accepted';

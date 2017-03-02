@@ -8,6 +8,9 @@ use Validator;
 
 use App\User;
 use Carbon\Carbon;
+use DB;
+use App\RideRequest;
+use App\DriverRoute;
 
 class AdminController extends Controller
 {
@@ -25,7 +28,7 @@ class AdminController extends Controller
             $results->where('role', strtoupper($request->type));
         }
 
-        if(in_array($request->status, ['approved', 'rejected', 'pending'])){
+        if(in_array($request->status, ['approved', 'rejected', 'pending', 'banned'])){
             switch($request->status){
                 case 'approved':
                     $results->whereNotNull('approved_at')->whereNull('rejected_at');
@@ -35,6 +38,9 @@ class AdminController extends Controller
                     break;
                 case 'pending':
                     $results->whereNull('rejected_at')->whereNull('approved_at');
+                    break;
+                case 'banned':
+                    $results->whereNotNull('banned_at');
                     break;
             }
         }
@@ -80,10 +86,11 @@ class AdminController extends Controller
     {
 
         $v = Validator::make($request->all(), [
-            'action' => 'required|in:approve,reject,remove,ban,unban'
+            'action' => 'required|in:approve,reject,remove,ban,unban',
+            'reason' => 'required_if:action,ban'
         ]);
 
-        if ($v->fails()) throw new \Dingo\Api\Exception\UpdateResourceFailedException('Could not set status for ride request.', $v->errors()->all());
+        if ($v->fails()) throw new \Dingo\Api\Exception\UpdateResourceFailedException('Could not set status for ride request.', $v->errors());
 
         $user = User::find($userId);
         switch($request->input('action')) {
@@ -101,10 +108,12 @@ class AdminController extends Controller
                 break;
             case 'ban':
                 $user->banned_at = Carbon::now();
+                $user->ban_reason = $request->reason;
                 $user->save();
                 break;
             case 'unban':
                 $user->banned_at = null;
+                $user->ban_reason = null;
                 $user->save();
                 break;
             case 'remove':
@@ -114,6 +123,38 @@ class AdminController extends Controller
         
         
         return $this->response->noContent();
+    }
+
+    public function userHistory($userId)
+    {
+        $user = User::find($userId);
+        if($user->isDriver()){
+            $result = DriverRoute::where('created_by', $userId)
+                ->select('id', 'type', 'place_formatted_address', 'departure_datetime')
+                ->with(['rideRequests' => function($query){
+                    $query->accepted()
+                        ->select('driver_route_id', 'commuter_id', 'location_address')
+                        ->with(['commuter' => function($query){
+                            $query->select(DB::raw('id, CONCAT(firstname, " ", lastname) AS fullname'));
+                        }]);
+                }])
+                ->orderBy('created_at', 'DESC')
+                ->get();
+            return $this->response->collection($result, new \App\Transformers\DriverRideHistoryTransformer);
+        }else{
+            $result = RideRequest::accepted()
+                ->select('id', 'location_address', 'driver_route_id')
+                ->where('commuter_id', $userId)
+                ->with(['driverRoute' => function($query){
+                    $query->select('id', 'type', 'place_formatted_address', 'departure_datetime', 'created_by')
+                        ->with(['driver' => function($query){
+                            $query->select(DB::raw('id, CONCAT(firstname, " ", lastname) AS fullname'));
+                        }]);
+                }])
+                ->orderBy('created_at', 'DESC')
+                ->get();
+            return $this->response->collection($result, new \App\Transformers\CommuterRideHistoryTransformer);
+        }
     }
 
 }

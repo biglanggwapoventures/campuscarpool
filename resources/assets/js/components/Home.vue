@@ -7,7 +7,10 @@
                     <user-card></user-card>
                 </div>
                 <div class="col-md-9">
-                    <router-view></router-view>
+                    <router-view v-if="!$auth.user().banned_at"></router-view>
+                    <div v-else>
+                        <div class="bs-callout bs-callout-danger"><h4> You have been banned for the following reason: </h4> <p>{{ $auth.user().ban_reason }}</p></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,6 +32,7 @@
             })
         },
         created() {
+            console.log('lol')
             switch(this.$auth.user().role){
                 case 'COMMUTER':
                     this.$router.replace({name: 'browse-routes'});

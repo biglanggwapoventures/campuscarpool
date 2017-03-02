@@ -30,6 +30,11 @@
                                             <span class="custom-control-description">Rejected</span>
                                         </label>
                                         <label class="custom-control custom-radio">
+                                            <input v-model="filter.status" value="banned"  type="radio" class="custom-control-input">
+                                            <span class="custom-control-indicator"></span>
+                                            <span class="custom-control-description">Banned</span>
+                                        </label>
+                                        <label class="custom-control custom-radio">
                                             <input v-model="filter.status" value=""  type="radio" class="custom-control-input">
                                             <span class="custom-control-indicator"></span>
                                             <span class="custom-control-description">None</span>
@@ -75,7 +80,7 @@
                                 <th>Name</th>
                                 <th>ID #</th>
                                 <th>Account Type</th>
-                                <th>Date Joined</th>
+                                <th>Rating</th>
                                 <th></th>
                             </tr>
                         </thead>    
@@ -86,7 +91,7 @@
                                 <td> <router-link :to="{name: 'admin.users.view', params: {id: u.id}}">{{ u.name.fullname }}</router-link></td>
                                 <td>{{ u.id_number }}</td>
                                 <td>{{ u.account_type }}</td>
-                                <td>{{ u.joined_at }}</td>
+                                <td><star-rating :show-rating="false" :star-size="15" :rating="u.rating" :read-only="true" :increment="0.01"> </star-rating></td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -100,7 +105,8 @@
 <script>
     export default {
         components: {
-             'ccselect' : require('./../Select.vue')
+             'ccselect' : require('./../Select.vue'),
+             'star-rating': require('vue-star-rating')
         },
         data() {
             return {

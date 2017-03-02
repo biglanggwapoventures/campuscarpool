@@ -9,6 +9,8 @@ class UserListTransformer extends TransformerAbstract
 {
     public function transform(User $user)
     {
+        $rating =  $user->averageRating(true);
+        // dd($rating);
         return [
            'id' => (int)$user->id,
            'name' => [
@@ -17,9 +19,10 @@ class UserListTransformer extends TransformerAbstract
                'fullname' => $user->fullName(),
            ],
            'id_number' => $user->id_number,
-           'joined_at' => $user->created_at->format('m/d/Y h:i A'),
            'display_photo_filename' => asset($user->display_photo),
-           'account_type' => ucfirst(strtolower($user->role))
+           'account_type' => ucfirst(strtolower($user->role)),
+           'rating' => $rating ? $rating->avg_rating : 0,
+           'num_ratings' => $rating ? $rating->num_ratings : 0,
 	    ];
     }
 

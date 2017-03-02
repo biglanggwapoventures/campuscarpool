@@ -53,10 +53,10 @@ class CommuterRideRequestController extends Controller
     {
         $result = false;
         $status = null;
-        $lastRequest = $this->auth->user()->rideRequests()->orderBy('created_at', 'DESC')->first();
-        if($lastRequest && $lastRequest->isActive()){
+        $activeRequests = $this->auth->user()->rideRequests()->currentDay()->active()->get();
+        if($activeRequests->count() >= 3){
             $result = true;
-            $status = $lastRequest->getStatus();
+            // $status = $lastRequest->getStatus();
         }
         return $this->response->array([
             'result' => $result,

@@ -38,6 +38,10 @@ class UserTransformer extends TransformerAbstract
             'date' => isset($actionDate) ? $actionDate : null
         ];
 
+        if($code === 3){
+            $status['ban_reason'] = $user->ban_reason;
+        }
+
         if($user->isDriver()){
             $requirements  +=  [
                'drivers_license' => asset($user->profile->drivers_license_filename),

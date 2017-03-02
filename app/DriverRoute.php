@@ -83,5 +83,10 @@ class DriverRoute extends Model
         return $this->departure_datetime->lt(Carbon::now());
     }
     
+    public function commuters()
+    {
+        
+    }
+    
     
 }

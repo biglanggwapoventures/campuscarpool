@@ -32,6 +32,7 @@ class DriverRideRequestTransformer extends TransformerAbstract
            'accepted' => $rideRequest->accepted,
            'latitude' => $rideRequest->location_latitude,
            'longitude' => $rideRequest->location_longitude,
+           'location' => $rideRequest->location_address,
            'rejected' => $rideRequest->rejected,
            'status' => $status,
            'requested_at' => $rideRequest->created_at->format('M d, Y h:i A')

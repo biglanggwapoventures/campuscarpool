@@ -32,6 +32,7 @@ $api->version('v1', function ($api) {
 
             $api->group(['prefix' => 'admin'], function($api){
                 $api->get('users', 'AdminController@users');
+                $api->get('user/{id}/history', 'AdminController@userHistory');
                 $api->get('reports', 'AdminController@reports');
                 $api->get('user/{id}', 'AdminController@fetchUser');
                 $api->patch('user/{id}', 'AdminController@moderateUser');
@@ -49,7 +50,10 @@ $api->version('v1', function ($api) {
                 $api->group(['prefix' => 'commuter'], function($api){
                     // get all reide request with params
                     $api->get('/', 'CommuterRideRequestController@all');
+
+                    //get commuter active reqeust
                     $api->get('/active', 'CommuterRideRequestController@active');
+
                     $api->get('{id}', 'CommuterRideRequestController@fetch');
                     $api->post('{id}/accept', 'CommuterRideRequestController@accept');
                     $api->post('{id}/reject', 'CommuterRideRequestController@reject');

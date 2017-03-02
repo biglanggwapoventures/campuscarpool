@@ -126,7 +126,7 @@ class User extends Authenticatable
         return "{$this->firstname} {$this->lastname}";
     }
 
-    public function averageRating()
+    public function averageRating($withCount = false)
     {
        if($this->isCommuter()){
             $result =  $this->rideRequests()
@@ -139,7 +139,10 @@ class User extends Authenticatable
                 ->groupBy('commuter_id')
                 ->having('num_ratings', '>=', 3)
                 ->first();
-            return $result ? $result->avg_rating : 0;
+            if(!$withCount){
+                return $result ? $result->avg_rating : 0;
+            }
+            return $result;
        }
 
        $result = \DB::table('ride_requests')
@@ -154,7 +157,10 @@ class User extends Authenticatable
             ->groupBy('driver_routes.created_by')
             ->having('num_ratings', '>=', 3)
             ->first();
-        return $result ? $result->avg_rating : 0;
+        if(!$withCount){
+            return $result ? $result->avg_rating : 0;
+        }
+        return $result;
 
     }
 

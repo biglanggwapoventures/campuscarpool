@@ -105,9 +105,9 @@ class DriverRouteController extends Controller
     public function request(RideRequestRequest $request)
     {
         //check if user has active ride request
-        $lastRequest = $this->auth->user()->rideRequests()->orderBy('created_at', 'DESC')->first();
-        if($lastRequest && $lastRequest->isActive()){
-            return $this->response->errorBadRequest('Cannot perform action: You have an active ride request.');
+        $activeRequests = $this->auth->user()->rideRequests()->currentDay()->active()->get();
+        if($activeRequests->count() >= 3){
+            return $this->response->errorBadRequest('Cannot perform action: You can only have 3 requests per day.');
         }
 
         // fetch driver route details

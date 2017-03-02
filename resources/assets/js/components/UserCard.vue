@@ -13,18 +13,21 @@
                     </div>
                 </div>
             </div>
-            <div class="list-group list-group-flush" v-if="$auth.user().role === 'DRIVER'">
-                <router-link v-bind:class="{'active' : $route.name === 'driver-routes'}" :to="{name: 'driver-routes'}" class="list-group-item list-group-item-action">My Routes</router-link>
-                <router-link active-class="active" :to="{name: 'new-route'}" class="list-group-item list-group-item-action">New Route</router-link>
-                <router-link active-class="active" :to="{name: 'profile-basic-information'}" class="list-group-item list-group-item-action">Profile</router-link>
-            </div>
-            <div class="list-group list-group-flush" v-else-if="$auth.user().role === 'COMMUTER'">
-                <router-link v-bind:class="{'active' : $route.name === 'browse-routes'}"  :to="{name: 'browse-routes'}" class="list-group-item list-group-item-action">Browse Routes</router-link>
-                <router-link active-class="active" :to="{name: 'commuter-requests'}" class="list-group-item list-group-item-action">
-                    My Requests 
-                </router-link>
-                <router-link active-class="active" :to="{name: 'profile-basic-information'}" class="list-group-item list-group-item-action">Profile</router-link>
-            </ul>
+            <template v-if="!$auth.user().banned_at">
+                <div class="list-group list-group-flush" v-if="$auth.user().role === 'DRIVER'">
+                    <router-link v-bind:class="{'active' : $route.name === 'driver-routes'}" :to="{name: 'driver-routes'}" class="list-group-item list-group-item-action">My Routes</router-link>
+                    <router-link active-class="active" :to="{name: 'new-route'}" class="list-group-item list-group-item-action">New Route</router-link>
+                    <router-link active-class="active" :to="{name: 'profile-basic-information'}" class="list-group-item list-group-item-action">Profile</router-link>
+                </div>
+                <div class="list-group list-group-flush" v-else-if="$auth.user().role === 'COMMUTER'">
+                    <router-link v-bind:class="{'active' : $route.name === 'browse-routes'}"  :to="{name: 'browse-routes'}" class="list-group-item list-group-item-action">Browse Routes</router-link>
+                    <router-link active-class="active" :to="{name: 'commuter-requests'}" class="list-group-item list-group-item-action">
+                        My Requests 
+                    </router-link>
+                    <router-link active-class="active" :to="{name: 'profile-basic-information'}" class="list-group-item list-group-item-action">Profile</router-link>
+                </div>
+            </template>
+            
         </div>
     </div>
     

@@ -12,7 +12,7 @@
                 <thead class="thead-inverse">
                     <tr>
                         <th>Name</th>
-                        <th>Requested at</th>
+                        <th>Dropoff / Pickup</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -28,7 +28,9 @@
                         :num-seats="c.num_seats"
                         :requested-at="c.requested_at"
                         :status="c.status"
-                        v-on:open-chat="openChat({id: c.commuter_id, name: c.commuter.data.name, photo: c.commuter.data.display_photo_filename})">
+                        :location="c.location"
+                        v-on:open-chat="openChat({id: c.commuter_id, name: c.commuter.data.name, photo: c.commuter.data.display_photo_filename})"
+                        v-on:action-done="getData">
                     </tr>
                 </tbody>
             </table>
@@ -50,9 +52,6 @@
             this.id = this.$route.params.id;
             this.getData();
         },
-        created(){
-            console.log('asdasd')
-        },
         methods: {
             
             getData() {
@@ -72,7 +71,6 @@
                 this.$refs.chat.open(commuterId);
             },
             changeFilter() {
-                console.log('fota');
                 this.$router.push({ name: 'driver-route-view-requests', params: {id: this.id, type: this.filter.type} })
             }
         },

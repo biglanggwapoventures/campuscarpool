@@ -39,9 +39,9 @@ class LoginController extends Controller
 
         $user = User::where(['id_number' => $request->id_number])->first();
 
-        if($user->banned_at){
-            throw new \Dingo\Api\Exception\StoreResourceFailedException('Validation errors..', ['id_number' => ['Your account has been banned! You are no longer be able to login!']]);
-        }
+        // if($user->banned_at){
+        //     throw new \Dingo\Api\Exception\StoreResourceFailedException('Validation errors..', ['id_number' => ['Your account has been banned! You are no longer be able to login!']]);
+        // }
 
         $user->display_photo = asset($user->display_photo);
 
